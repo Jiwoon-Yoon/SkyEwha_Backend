@@ -1,0 +1,67 @@
+# Python 기본 무시 항목
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+*.manifest
+*.spec
+
+# 가상환경 폴더 (venv, env 등)
+env/
+venv/
+ENV/
+.venv/
+.ENV/
+venvs/
+.venvs/
+
+# 환경 변수 파일
+.env
+.env.*
+
+# IDE 설정 파일 (PyCharm 등)
+.idea/
+.vscode/
+
+# OS, 에디터 불필요 파일
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# 로그 및 실행 파일
+*.log
+*.pid
+
+# SQLite, DB 등 테스트용 파일
+*.db
+*.sqlite3
+
+# pytest 캐시
+.cache/
+.pytest_cache/
+
+# Jupyter notebook 체크포인트
+.ipynb_checkpoints/
+
+# mypy, coverage, profiling 관련
+.mypy_cache/
+.coverage
+htmlcov/
+.prof
+
+# Alembic 마이그레이션 로그
+alembic/versions/*.pyc
+
+# FastAPI Docs Cache (특정 경우)
+openapi.json
+
+# 기타 사용자 정의
+*.bak
+*.swp

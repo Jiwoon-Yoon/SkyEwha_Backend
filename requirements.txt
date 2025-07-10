@@ -1,0 +1,18 @@
+#FastAPI 웹 서버
+fastapi
+uvicorn[standard]
+
+# OAuth 인증 (Google, Kakao 등) + HTTP 요청용
+httpx
+
+# 환경변수 관리 (.env 파일)
+python-dotenv
+
+# PostgreSQL 연동 (ORM)
+sqlalchemy
+psycopg2-binary
+alembic
+
+# JWT 발급/검증용
+python-jose
+passlib[bcrypt]
