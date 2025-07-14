@@ -6,13 +6,19 @@ uvicorn[standard]
 httpx
 
 # 환경변수 관리 (.env 파일)
-python-dotenv
+pydantic_settings
 
-# PostgreSQL 연동 (ORM)
+# MySQL 연동 (ORM)
 sqlalchemy
-psycopg2-binary
+mysql-connector-python
 alembic
 
 # JWT 발급/검증용
 python-jose
 passlib[bcrypt]
+
+# 구글 소셜 로그인
+google-auth
+
+# 메모리 캐시 저장
+redis==4.6.0
