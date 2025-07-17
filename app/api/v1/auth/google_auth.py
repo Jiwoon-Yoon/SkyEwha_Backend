@@ -118,14 +118,16 @@ async def google_login(data: auth.GoogleTokenRequest, db: Session = Depends(deps
 
         # 신규 사용자: 임시 토큰 발급 (닉네임 입력 전용)
         temp_token = create_temp_token(subject=f"temp_{google_id}")
+
         return {
             "isNewUser": True,
             "tempToken": temp_token,
             "email": email,
             "name": name,
+            "access_token": access_token
         }
 
-@router.post("/signup", summary="구글 회원가입", description="구글 로그인 후 닉네임 입력")
+@router.post("/signup", summary="구글 회원가입", description="닉네임 입력 후 회원가입")
 async def google_signup(data: auth.CompleteSignupRequest, db: Session = Depends(deps.get_db)):
     # 임시 토큰 검증
     temp_subject = verify_token(data.temp_token, token_type="temp")
@@ -147,6 +149,11 @@ async def google_signup(data: auth.CompleteSignupRequest, db: Session = Depends(
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
+
+    # Redis에 access_token 저장
+    print(f"저장할 access_token: {data.access_token}")
+    success = await set_google_access_token(str(new_user.user_id), data.access_token)
+    print(f"Redis 저장 성공 여부: {success}")
 
     # 정식 JWT 토큰 발급
     app_access_token = create_access_token(subject=str(new_user.user_id))

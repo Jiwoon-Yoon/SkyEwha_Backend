@@ -9,6 +9,8 @@ class Settings(BaseSettings):
     kakao_redirect_url : str
     kakao_auth_url : str
     kakao_secret : str
+    kakao_logout: str
+    kakao_unlink: str
     jwt_secret_key : str
 
     google_client_id: str
