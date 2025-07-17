@@ -17,6 +17,7 @@ class CompleteSignupRequest(BaseModel):
     temp_token: str
     name: Optional[str] = None
     email: Optional[str] = None
+    access_token: Optional[str] = None  # Optional로 둬서 필요할 때만 전달
 
 class KakaoLogoutResponse(BaseModel):
     message: str
