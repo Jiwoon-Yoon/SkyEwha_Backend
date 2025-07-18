@@ -72,6 +72,8 @@ def create_temp_token(subject: str, expires_minutes: int = 10):
 def get_current_user_token(credentials: HTTPAuthorizationCredentials = Depends(security)):
     """현재 사용자의 JWT 토큰을 가져오고 검증"""
     token = credentials.credentials
+    if token.startswith("Bearer "):  # Bearer 접두어 제거
+        token = token.replace("Bearer ", "", 1)
 
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,

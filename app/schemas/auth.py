@@ -5,6 +5,10 @@ from pydantic import BaseModel
 class KakaoTokenRequest(BaseModel):
     code: str
 
+class KakaoTokenSaveRequest(BaseModel):
+    user_id: str
+    access_token: str
+
 class GoogleTokenRequest(BaseModel):
     code: str
 
@@ -23,6 +27,7 @@ class KakaoLogoutResponse(BaseModel):
     message: str
     success: bool
     kakao_logout_success: bool
+    kakao_logout_url: Optional[str] = None
 
 class KakaoUnlinkResponse(BaseModel):
     message: str

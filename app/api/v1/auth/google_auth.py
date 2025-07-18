@@ -93,6 +93,7 @@ async def google_login(data: auth.GoogleTokenRequest, db: Session = Depends(deps
         if existing_user:
             # 기존 사용자: 마지막 로그인 시간 업데이트
             existing_user.user_last_login = datetime.now()
+            existing_user.user_is_active = True
             db.commit()
 
             # Redis에 구글 OAuth access_token 저장 (6시간)
