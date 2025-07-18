@@ -47,6 +47,9 @@ async def logout_google(current_user: dict = Depends(get_current_user_token), db
                 if response.status_code == 200:
                     google_logout_success = True
 
+                    # redis 토큰 삭제
+                    await delete_google_access_token(user_id)
+
                     # 유저 정보 조회해서 user_is_active = False로 설정
                     user_obj = db.query(user.User).filter(user.User.user_id == user_id).first()
                     if user_obj:
