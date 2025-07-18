@@ -10,6 +10,8 @@ from app.models import user
 from app.core.security import *
 from datetime import datetime
 
+from app.services.kakao_service import set_kakao_access_token
+
 router = APIRouter()
 
 @router.get("/kakao/login_url")
@@ -20,7 +22,7 @@ def get_kakao_login_url():
     kakao_login_url = (
         f"{settings.kakao_auth_url}"
         f"?client_id={settings.kakao_client_id}"
-        f"&redirect_uri={settings.kakao_redirect_url}"
+        f"&redirect_uri={settings.kakao_login_redirect_url}"
         f"&response_type=code"
     )
     return {"login_url": kakao_login_url}
@@ -39,7 +41,7 @@ async def kakao_login(data: auth.KakaoTokenRequest, db:Session = Depends(deps.ge
             data={
                 "grant_type": "authorization_code",
                 "client_id": settings.kakao_client_id,
-                "redirect_uri": settings.kakao_redirect_url,
+                "redirect_uri": settings.kakao_login_redirect_url,
                 "code": data.code,
             },
             headers={"Content-Type": "application/x-www-form-urlencoded;charset=utf-8"}
@@ -53,7 +55,7 @@ async def kakao_login(data: auth.KakaoTokenRequest, db:Session = Depends(deps.ge
                 "kakao_response": token_response.text,
                 "request_data": {
                     "client_id": settings.kakao_client_id,
-                    "redirect_uri": settings.kakao_redirect_url,
+                    "redirect_uri": settings.kakao_login_redirect_url,
                     "code": data.code[:20] + "..." if len(data.code) > 20 else data.code
                 }
             }
@@ -98,7 +100,13 @@ async def kakao_login(data: auth.KakaoTokenRequest, db:Session = Depends(deps.ge
         if existing_user:
             # 기존 사용자: 마지막 로그인 시간 업데이트
             existing_user.user_last_login = datetime.now()
+            existing_user.user_is_active = True
             db.commit()
+
+            # Redis에 access_token 저장
+            print(f"저장할 access_token: {access_token}")
+            success = await set_kakao_access_token(str(existing_user.user_id), access_token)
+            print(f"Redis 저장 성공 여부: {success}")
 
             # 기존 사용자: 내 앱의 JWT 토큰 생성
             app_access_token = create_access_token(subject=str(existing_user.user_id))
@@ -153,6 +161,11 @@ async def kakao_signup(
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
+
+    # Redis에 access_token 저장
+    print(f"저장할 access_token: {data.access_token}")
+    success = await set_kakao_access_token(str(new_user.user_id), data.access_token)
+    print(f"Redis 저장 성공 여부: {success}")
 
     # 정식 JWT 토큰 발급
     app_access_token = create_access_token(subject=str(new_user.user_id))
