@@ -18,7 +18,7 @@ router = APIRouter()
 # ========================================
 # 구글 로그아웃: access token 폐기
 # ========================================
-@router.post("/logout/google", summary="구글 로그아웃", response_model=GoogleLogoutResponse)
+@router.post("/google/logout", summary="구글 로그아웃", response_model=GoogleLogoutResponse)
 async def logout_google(current_user: dict = Depends(get_current_user_token), db: Session = Depends(get_db)):
     """
     구글 access token을 revoke(폐기)하고, user_is_active를 False로 설정 (앱에서 로그아웃 상태)
@@ -75,7 +75,7 @@ async def logout_google(current_user: dict = Depends(get_current_user_token), db
 # ========================================
 # 구글 연결 해제 (회원탈퇴)
 # ========================================
-@router.post("/unlink/google", summary="구글 계정 연결 해제", response_model=GoogleUnlinkResponse)
+@router.post("/google/unlink", summary="구글 계정 연결 해제", response_model=GoogleUnlinkResponse)
 async def unlink_google(current_user: dict = Depends(get_current_user_token), db: Session = Depends(get_db)):
     """
     구글 access token을 revoke(폐기)한 후 DB에서 사용자 데이터 삭제

@@ -32,7 +32,7 @@ def get_kakao_login_url():
 
 # 1단계: 소셜 로그인 인증
 # 인가 코드에 관한 리턴값을 통해 신규/기존 회원 구분
-@router.post("/kakao/token")
+@router.post("/kakao/login")
 async def kakao_login(data: auth.KakaoTokenRequest, db:Session = Depends(deps.get_db)):
     async with httpx.AsyncClient() as client:
         # 카카오 액세스 토큰 요청
