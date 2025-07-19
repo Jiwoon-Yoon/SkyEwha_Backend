@@ -77,12 +77,14 @@ async def unlink_kakao(current_user: dict = Depends(get_current_user_token), db:
     """
     # 사용자 정보 가져오기
     user_id = current_user["user_id"]
+
     user_obj = db.query(user.User).filter(user.User.user_id == user_id).first()
     if not user_obj:
         raise HTTPException(status_code=404, detail="사용자를 찾을 수 없습니다")
 
     # 연결 해제 요청용: 카카오 사용자 ID
     kakao_user_id = user_obj.user_social_id
+    # kakao_user_id = str(user_obj.user_social_id)
     if not kakao_user_id:
         raise HTTPException(status_code=400, detail="카카오 사용자 ID가 없습니다")
 
