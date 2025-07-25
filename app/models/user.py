@@ -1,5 +1,6 @@
 # app/models/user.py
 from sqlalchemy import Column, Integer, String, DateTime, Boolean, UniqueConstraint, BigInteger
+from sqlalchemy.dialects.mysql import VARCHAR
 from sqlalchemy.sql import func
 from app.db.base import Base
 from app.db.session import engine
@@ -14,7 +15,7 @@ class User(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now()) # 가입일
     user_is_active = Column(Boolean, default=True)  # 계정 활성화 상태 (기본값: True)
     user_last_login = Column(DateTime, default=None)  # 마지막 로그인 시간 (NULL 허용)
-    user_social_id = Column(String(255), unique=True, nullable=True)  # 카카오/구글/네이버 계정 고유 ID (고유값, NULL 허용)
+    user_social_id = Column(BigInteger, unique=True, nullable=True)  # 카카오/구글/네이버 계정 고유 ID (고유값, NULL 허용)
 
     __table_args__ = (
         UniqueConstraint("user_social_id","user_provider",name="uix_social_provider"),
