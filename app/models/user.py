@@ -1,7 +1,6 @@
 # app/models/user.py
 from sqlalchemy import Column, Integer, String, DateTime, Boolean, UniqueConstraint, BigInteger
 from sqlalchemy.sql import func
-
 from app.db.base import Base
 from app.db.session import engine
 

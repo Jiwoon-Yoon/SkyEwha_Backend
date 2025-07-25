@@ -13,9 +13,7 @@ sqlalchemy
 alembic
 
 psycopg2-binary
-
-# MySQL 연동 (ORM)
-# mysql-connector-python
+pgvector
 
 # JWT 발급/검증용
 python-jose
