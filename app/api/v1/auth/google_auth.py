@@ -125,7 +125,7 @@ async def google_login(data: auth.GoogleTokenRequest, db: Session = Depends(deps
             "tempToken": temp_token,
             "email": email,
             "name": name,
-            "access_token": access_token
+            "google_access_token": access_token
         }
 
 @router.post("/google/signup", summary="구글 회원가입", description="닉네임 입력 후 회원가입")
@@ -169,4 +169,3 @@ async def google_signup(data: auth.CompleteSignupRequest, db: Session = Depends(
             "email": new_user.user_email
         }
     }
-
