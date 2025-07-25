@@ -23,8 +23,3 @@ class User(Base):
     # 입력된 객체 확인을(디버깅이나 로깅) 위해 사용
     def __repr__(self):
         return f"<User(user_id={self.user_id}, user_email={self.user_email}, user_nickname={self.user_nickname})>"
-
-
-    # db에 테이블 생성
-    Base.metadata.create_all(engine)
-    print("테이블 생성 완료")

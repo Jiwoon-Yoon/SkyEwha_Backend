@@ -2,5 +2,6 @@
 from .user import User
 from .video import Video
 from .keyword import Keyword
+from .youtube import YouTubeVideo
 
-__all__ = ["User", "Video"]
+__all__ = ["User", "Video","YouTubeVideo"]

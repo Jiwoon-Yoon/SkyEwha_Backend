@@ -26,6 +26,12 @@ class Settings(BaseSettings):
     POSTGRES_DB: str
     #REDIS_PASSWORD: str = None  # Optional
 
+    youtube_api_key: str
+    region_code : str
+    max_results: int
+    top_keywords: int
+    travel_score_threshold: int
+
     class Config:
         env_file = ".env"
 

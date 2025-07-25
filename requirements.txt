@@ -24,3 +24,12 @@ google-auth
 
 # 메모리 캐시 저장
 redis==4.6.0
+
+#유튜브 비디오
+google-api-python-client~=2.176.0
+pandas
+scikit-learn~=1.7.1
+konlpy~=0.6.0
+sentence-transformers
+pydantic~=2.11.7
+python-dateutil~=2.9.0.post0
