@@ -8,7 +8,6 @@ httpx
 # 환경변수 관리 (.env 파일)
 pydantic_settings
 
-
 # PostgreSQL연동
 sqlalchemy
 alembic
