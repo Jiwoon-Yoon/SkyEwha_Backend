@@ -10,7 +10,7 @@ from app.services.google_service import set_google_access_token
 
 router = APIRouter()
 
-@router.get("/login_url")
+@router.get("/google/login_url")
 def get_google_login_url():
     """
     Google OAuth2 로그인 URL 생성
@@ -26,7 +26,7 @@ def get_google_login_url():
     )
     return {"login_url": url}
 
-@router.post("/token")
+@router.post("/google/login")
 async def google_login(data: auth.GoogleTokenRequest, db: Session = Depends(deps.get_db)):
     """
     Google 인가 코드로 토큰 요청 및 로그인 처리
@@ -125,10 +125,10 @@ async def google_login(data: auth.GoogleTokenRequest, db: Session = Depends(deps
             "tempToken": temp_token,
             "email": email,
             "name": name,
-            "access_token": access_token
+            "google_access_token": access_token
         }
 
-@router.post("/signup", summary="구글 회원가입", description="닉네임 입력 후 회원가입")
+@router.post("/google/signup", summary="구글 회원가입", description="닉네임 입력 후 회원가입")
 async def google_signup(data: auth.CompleteSignupRequest, db: Session = Depends(deps.get_db)):
     # 임시 토큰 검증
     temp_subject = verify_token(data.temp_token, token_type="temp")

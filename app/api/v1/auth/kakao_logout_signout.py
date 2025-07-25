@@ -13,7 +13,7 @@ from app.services.kakao_service import get_kakao_access_token, delete_kakao_acce
 
 router = APIRouter()
 
-@router.post("/logout/kakao",
+@router.post("/kakao/logout",
              summary="카카오계정과 함께 로그아웃 (카카오 로그아웃 + 계정 세션 만료)",
              description="카카오 세션을 종료하고 애플리케이션 토큰도 무효화",
              response_model=KakaoLogoutResponse)
@@ -66,22 +66,25 @@ async def logout_kakao(current_user: dict = Depends(get_current_user_token), db:
 
 
 
-@router.post("/unlink/kakao",
+@router.post("/kakao/unlink",
              summary="카카오 어드민 키를 통한 회원탈퇴",
              description="카카오 계정과의 연결을 완전히 끊음 (회원탈퇴)",
              response_model=KakaoUnlinkResponse)
-async def unlink_kakao(user_id: int, db: Session = Depends(get_db)):
+async def unlink_kakao(current_user: dict = Depends(get_current_user_token), db: Session = Depends(get_db)):
     """
     카카오 연결 해제 (회원탈퇴)
     - 카카오 계정과의 연결을 완전히 끊음
     """
     # 사용자 정보 가져오기
+    user_id = current_user["user_id"]
+
     user_obj = db.query(user.User).filter(user.User.user_id == user_id).first()
     if not user_obj:
         raise HTTPException(status_code=404, detail="사용자를 찾을 수 없습니다")
 
     # 연결 해제 요청용: 카카오 사용자 ID
     kakao_user_id = user_obj.user_social_id
+    # kakao_user_id = str(user_obj.user_social_id)
     if not kakao_user_id:
         raise HTTPException(status_code=400, detail="카카오 사용자 ID가 없습니다")
 
@@ -107,8 +110,8 @@ async def unlink_kakao(user_id: int, db: Session = Depends(get_db)):
             )
 
         # Redis에서 사용자 정보 삭제 또는 카카오 연결 정보 삭제
-        await delete_kakao_access_token(str(user_id))
-        await delete_user_kakao_data(str(user_id), db)
+        await delete_kakao_access_token(user_id)
+        await delete_user_kakao_data(user_id, db)
         return {
             "success": True,
             "message": f"사용자 {user_id} 의 카카오 연결이 해제되고 탈퇴 처리되었습니다.",
