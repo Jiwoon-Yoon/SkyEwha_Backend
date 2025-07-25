@@ -2,7 +2,7 @@
 from sqlalchemy import Column, Integer, String, DateTime, Boolean, UniqueConstraint, BigInteger
 from sqlalchemy.sql import func
 from app.db.base import Base
-from app.db.session import engine
+from sqlalchemy.orm import relationship
 
 class User(Base):
     __tablename__ = "users"
@@ -19,6 +19,8 @@ class User(Base):
     __table_args__ = (
         UniqueConstraint("user_social_id","user_provider",name="uix_social_provider"),
     )
+
+    videos = relationship("Video", back_populates="user", cascade="all, delete-orphan")  # videos 관계 추가
 
     # 입력된 객체 확인을(디버깅이나 로깅) 위해 사용
     def __repr__(self):
