@@ -5,7 +5,7 @@ from fastapi import HTTPException
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from sqlalchemy.orm import Session
-
+from app.schemas.youtube import YoutubeVideoCreate
 from app.core.config import settings
 from app.crud.crud_youtube import save_videos_to_db
 from app.crawlers.text_processing import (
@@ -93,10 +93,15 @@ def crawl_and_store(keyword: str, db: Session) -> int:
     YouTube 영상 크롤링 후 여행 영상만 DB에 저장.
     """
     try:
-        print(f"crawl_and_store 시작 - keyword: {keyword}")
-        video_ids = fetch_youtube_video_ids(keyword)
-        videos = fetch_video_details(video_ids)
-        save_videos_to_db(videos, db)
+        video_ids = fetch_youtube_video_ids(keyword)  # 영상 ID 리스트 받아오기
+
+        videos_data = fetch_video_details(video_ids)  # 딕셔너리 리스트 저장
+
+        # 딕셔너리를 Pydantic 모델 객체 리스트로 변환
+        videos = [YoutubeVideoCreate(**video) for video in videos_data]
+
+        save_videos_to_db(videos, db)  # 변환한 객체 리스트를 DB 저장 함수에 넘기기
+
         return len(videos)
     except HTTPException:
         # 이미 위 함수에서 처리한 HTTPException은 그대로 다시 던짐
