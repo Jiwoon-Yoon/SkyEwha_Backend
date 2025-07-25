@@ -12,6 +12,7 @@ class Video(Base):
     upload_date = Column(Date, default=date.today)
 
     user = relationship("User", back_populates="videos")
+    keywords = relationship("Keyword", back_populates="video", cascade="all, delete-orphan")  # 비디오 모델에 키워드 관계 추가
 
     # 입력된 객체 확인을(디버깅이나 로깅) 위해 사용
     def __repr__(self):
