@@ -83,7 +83,6 @@ async def kakao_login(data: auth.KakaoTokenRequest, db:Session = Depends(deps.ge
         # 사용자 정보 파싱
         user_info = user_response.json()
         kakao_id = user_info.get("id")
-        kakao_id=str(kakao_id)
 
         # 카카오 계정 정보 추출
         kakao_account = user_info.get("kakao_account", {})
@@ -132,8 +131,7 @@ async def kakao_login(data: auth.KakaoTokenRequest, db:Session = Depends(deps.ge
             "isNewUser": True,
             "tempToken": temp_token,
             "email": email,
-            "name": name,
-            "kakao_access_token": access_token
+            "name": name
         }
 
 

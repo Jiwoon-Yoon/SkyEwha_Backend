@@ -21,11 +21,6 @@ class Settings(BaseSettings):
     google_auth_url: str
     google_token_url: str
 
-    POSTGRES_USER: str
-    POSTGRES_PASSWORD: str
-    POSTGRES_DB: str
-    #REDIS_PASSWORD: str = None  # Optional
-
     class Config:
         env_file = ".env"
 
