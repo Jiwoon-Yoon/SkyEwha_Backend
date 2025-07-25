@@ -18,7 +18,6 @@ okt = Okt()
 
 #설정값
 REGION_CODE = settings.region_code
-print(settings.region_code)
 MAX_RESULTS = settings.max_results
 TOP_KEYWORDS = settings.top_keywords
 TRAVEL_SCORE_THRESHOLD = settings.travel_score_threshold
