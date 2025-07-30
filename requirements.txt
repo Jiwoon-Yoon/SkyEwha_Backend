@@ -33,6 +33,7 @@ konlpy~=0.6.0
 sentence-transformers
 pydantic~=2.11.7
 python-dateutil~=2.9.0.post0
+apscheduler
 
 # 폼 저장
 python-multipart>=0.0.6

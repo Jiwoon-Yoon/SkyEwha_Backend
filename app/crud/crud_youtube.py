@@ -2,7 +2,7 @@
 
 from sqlalchemy.orm import Session
 from typing import List
-
+from datetime import datetime
 from app.models.youtube import YouTubeVideo
 from app.schemas.youtube import YoutubeVideoCreate
 
@@ -18,6 +18,8 @@ def save_videos_to_db(videos: List[YoutubeVideoCreate], db: Session) -> None:
             YouTubeVideo.video_id == video.video_id
         ).first()
         if existing:
+            # created_at만 최신으로 갱신
+            existing.created_at = datetime.now()
             continue
 
         db_video = YouTubeVideo(
