@@ -7,7 +7,7 @@ from app.db.base import Base
 class Video(Base):
     __tablename__ = "videos"
     video_id = Column(Integer, primary_key=True, index=True,  autoincrement=True) # PK
-    user_id = Column(Integer, ForeignKey("users.user_id", ondelete="CASCADE"), nullable=True) #FK
+    user_id = Column(Integer, ForeignKey("users.user_id", ondelete="CASCADE"), nullable=False) #FK
     video_title = Column(String, nullable=False)
     upload_date = Column(Date, default=date.today)
 
