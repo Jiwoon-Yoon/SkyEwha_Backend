@@ -32,6 +32,8 @@ class Settings(BaseSettings):
     top_keywords: int
     travel_score_threshold: int
 
+    upload_dir: str
+
     class Config:
         env_file = ".env"
 
