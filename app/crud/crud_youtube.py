@@ -2,7 +2,6 @@
 
 from sqlalchemy.orm import Session
 from typing import List
-from datetime import datetime
 
 from app.models.youtube import YouTubeVideo
 from app.schemas.youtube import YoutubeVideoCreate
