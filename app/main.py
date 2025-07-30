@@ -1,8 +1,19 @@
 # app/main.py
 from fastapi import FastAPI
 from app.api.v1.routers import api_router
+from contextlib import asynccontextmanager
+from app.scheduler.youtube_scheduler import scheduler, start_scheduler
 
-app = FastAPI()
+@asynccontextmanager
+async def lifespan(_app: FastAPI):
+    start_scheduler()
+    scheduler.start()
+    try:
+        yield
+    finally:
+        scheduler.shutdown()
+
+app = FastAPI(lifespan=lifespan)
 
 
 @app.get("/hello")
