@@ -33,3 +33,16 @@ class YoutubeVideo(BaseModel):
     thumbnail_url: Optional[HttpUrl]
     video_url: Optional[HttpUrl]
     created_at: datetime
+
+class KeywordSearchRequest(BaseModel):
+    keywords: List[str]
+
+class YoutubeTitleResponse(BaseModel):
+    title: str
+    video_url: Optional[str]
+    thumbnail_url: Optional[str]
+    published_at: datetime
+    similarity: float
+
+class KeywordRecommendResponse(BaseModel):
+    results: List[YoutubeTitleResponse]

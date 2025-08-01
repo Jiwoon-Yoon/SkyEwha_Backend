@@ -1,22 +1,22 @@
 #FastAPI 웹 서버
-fastapi
+fastapi~=0.116.0
 uvicorn[standard]
 
 # OAuth 인증 (Google, Kakao 등) + HTTP 요청용
-httpx
+httpx~=0.28.1
 
 # 환경변수 관리 (.env 파일)
-pydantic_settings
+pydantic_settings~=2.10.1
 
 # PostgreSQL연동
-sqlalchemy
-alembic
+sqlalchemy~=2.0.41
+alembic~=1.16.3
 
 psycopg2-binary
-pgvector
+pgvector~=0.4.1
 
 # JWT 발급/검증용
-python-jose
+python-jose~=3.5.0
 passlib[bcrypt]
 
 # 구글 소셜 로그인
@@ -30,10 +30,13 @@ google-api-python-client~=2.176.0
 pandas
 scikit-learn~=1.7.1
 konlpy~=0.6.0
-sentence-transformers
+sentence-transformers~=5.0.0
 pydantic~=2.11.7
 python-dateutil~=2.9.0.post0
-apscheduler
+apscheduler~=3.11.0
 
 # 폼 저장
 python-multipart>=0.0.6
+
+#벡터 유사도
+numpy~=2.3.1
