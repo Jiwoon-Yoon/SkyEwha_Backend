@@ -34,6 +34,8 @@ class Settings(BaseSettings):
 
     upload_dir: str
 
+    openai_api_key: str
+
     class Config:
         env_file = ".env"
 

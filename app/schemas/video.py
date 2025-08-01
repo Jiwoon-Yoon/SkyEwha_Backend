@@ -15,5 +15,6 @@ class Video(VideoBase):
     user_id: int
     upload_date: date
 
-    class Config:
-        orm_mode = True
+    model_config = {
+        "from_attributes": True
+    }
