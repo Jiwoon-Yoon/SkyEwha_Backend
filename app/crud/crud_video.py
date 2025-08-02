@@ -14,3 +14,6 @@ def create_video(db: Session, video_in: VideoCreate, user_id: int) -> Video:
     db.commit()
     db.refresh(db_video)
     return db_video
+
+def get_video_by_id(db: Session, video_id: int) -> Video | None:
+    return db.query(Video).filter(Video.video_id == video_id).first()
