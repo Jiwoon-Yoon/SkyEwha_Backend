@@ -2,6 +2,7 @@
 from sqlalchemy.orm import Session
 from app.models.keyword import Keyword
 from app.schemas.keyword import KeywordCreate
+from typing import List
 
 def create_keyword(db: Session, keyword_data: KeywordCreate) -> Keyword:
     db_keyword = Keyword(**keyword_data.model_dump())
@@ -9,3 +10,7 @@ def create_keyword(db: Session, keyword_data: KeywordCreate) -> Keyword:
     db.commit()
     db.refresh(db_keyword)
     return db_keyword
+
+def get_keywords_by_video_id(db: Session, video_id: int) -> List[str]:
+    keywords = db.query(Keyword).filter(Keyword.video_id == video_id).all()
+    return [k.keyword for k in keywords]
