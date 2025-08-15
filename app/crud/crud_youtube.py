@@ -1,13 +1,12 @@
 # app/crud/crud_youtube.py
-from pgvector.sqlalchemy import Vector
 from sqlalchemy.orm import Session
 from sqlalchemy import select
-from app.crawlers.text_processing import model
 import numpy as np
 from typing import List
 from datetime import datetime
 from app.models.youtube import YouTubeVideo
 from app.schemas.youtube import YoutubeVideoCreate
+from app.crawlers.text_processing import get_embedding as get_openai_embedding
 
 
 def save_videos_to_db(videos: List[YoutubeVideoCreate], db: Session) -> None:
@@ -25,8 +24,8 @@ def save_videos_to_db(videos: List[YoutubeVideoCreate], db: Session) -> None:
             existing.created_at = datetime.now()
             continue
 
-        # 제목만 임베딩
-        embedding_vector = model.encode(video.title, normalize_embeddings=True).tolist()
+        # OpenAI embedding 사용
+        embedding_vector = get_openai_embedding(video.title)
 
         db_video = YouTubeVideo(
             video_id=video.video_id,
@@ -45,7 +44,8 @@ def save_videos_to_db(videos: List[YoutubeVideoCreate], db: Session) -> None:
     db.commit()
 
 def get_embedding(keywords: List[str]) -> List[float]:
-    vectors = [model.encode(k, normalize_embeddings=True) for k in keywords]
+    """키워드 리스트를 받아 평균 임베딩 생성"""
+    vectors = [get_openai_embedding(k) for k in keywords]
     avg_vector = np.mean(vectors, axis=0)
     return avg_vector.tolist()
 
@@ -58,7 +58,7 @@ def get_videos_by_keywords_similarity(db: Session, keywords: List[str], limit: i
     stmt = (
         select(YouTubeVideo, similarity)
         .where(YouTubeVideo.embedding.isnot(None))
-        .where(similarity <= 0.5)  # 유사도가 너무 낮은 건 제거
+        .where(similarity <= 0.6)  # 유사도가 너무 낮은 건 제거
         .order_by(similarity)
         .limit(limit)
     )
