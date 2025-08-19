@@ -4,6 +4,7 @@ from app.crud import crud_keyword
 from sqlalchemy.orm import Session
 from app.core.config import settings
 from app.schemas.keyword import KeywordCreate
+from app.services.embedding_service import get_embedding
 import re
 
 api_key = settings.openai_api_key
@@ -43,11 +44,13 @@ def parse_keywords(text: str) -> list[str]:
 
 def send_keywords(db: Session, video_id: int, keywords: list[str]):
     for keyword in keywords:
+        # OpenAI 임베딩 생성
+        embedding = get_embedding(keyword)
+
         keyword_data = KeywordCreate(
             video_id= video_id,
             keyword= keyword,
-            embedding= None  # 향후 Embedding 추가 가능
+            embedding= embedding
         )
         crud_keyword.create_keyword(db, keyword_data)
         print(f" 저장됨: {keyword}")
-

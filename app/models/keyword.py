@@ -9,7 +9,7 @@ class Keyword(Base):
     keyword_id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     video_id = Column(Integer, ForeignKey("videos.video_id", ondelete="CASCADE"), nullable=False) #FK
     keyword = Column(String, nullable=False)
-    embedding = Column(Vector(384), nullable=True)  # 예: 384차원 벡터, 모델에 따라 조정 가능
+    embedding = Column(Vector(1536), nullable=True)  # 예: 384차원 벡터, 모델에 따라 조정 가능
 
     video = relationship("Video", back_populates="keywords", passive_deletes=True)
 

@@ -13,7 +13,11 @@ def process_video_for_keywords(db: Session, user_id: int, video_title: str, vide
         raise FileNotFoundError(f"비디오 파일을 찾을 수 없습니다: {file_path}")
 
     print("음성 → 텍스트 변환 시작")
-    text = transcribe_audio(file_path)
+    # OpenAI API (빠름, 유료)
+    text = transcribe_audio(file_path, backend="openai")
+
+    # 로컬 Whisper (무료, CPU 환경은 "small" 권장)
+    # text = transcribe_audio(file_path, backend="local")
 
     print("추출된 텍스트:\n", text)
 

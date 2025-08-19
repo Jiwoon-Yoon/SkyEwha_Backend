@@ -1,5 +1,6 @@
 # app/schemas/keyword.py
 from pydantic import BaseModel
+from typing import List
 
 class WhisperProcessRequest(BaseModel):
     video_id: int
