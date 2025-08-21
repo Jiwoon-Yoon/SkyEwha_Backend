@@ -2,6 +2,7 @@
 from sqlalchemy.orm import Session
 from datetime import datetime
 from app.models.hashtag import Hashtag
+from app.services.embedding_service import get_embedding
 import numpy as np
 import datetime
 
@@ -29,13 +30,15 @@ def update_or_create_hashtag(db: Session, hashtag_str: str, week_posts: int):
         db.refresh(db_hashtag)
         return db_hashtag, "updated"
     else:
+        embedding = get_embedding(hashtag_str)  # OpenAI 호출
+
         new_hashtag = Hashtag(
             hashtag=hashtag_str,
             week_posts=week_posts,
             total_posts=week_posts,
             view_weight=float(calculate_view_weight(week_posts, week_posts)),
             last_updated=now,
-            embedding= None
+            embedding= embedding
         )
         db.add(new_hashtag)
         db.commit()
