@@ -42,8 +42,6 @@ def get_rising_hashtags(db: Session, this_week_date, last_week_date, top_n: int 
         rising_list.append({
             "hashtag": h.hashtag,
             "this_week": h.week_posts,
-            "last_week": last_val,
-            "increase": diff,
             "growth_rate": growth_rate,
         })
 

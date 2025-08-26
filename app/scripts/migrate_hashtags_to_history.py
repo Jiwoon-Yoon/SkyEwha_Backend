@@ -13,8 +13,6 @@ def migrate_hashtags_to_history():
             history = HashtagHistory(
                 hashtag=h.hashtag,
                 week_posts=h.week_posts,
-                total_posts=h.total_posts,
-                view_weight=h.view_weight,
                 collected_at=h.last_updated
             )
             db.add(history)
