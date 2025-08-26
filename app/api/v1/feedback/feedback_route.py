@@ -9,6 +9,7 @@ from app.services.feedback_service import (
     recommend_similar_videos,
 )
 from app.schemas.feedback import FeedbackResponse
+from app.crud.crud_feedback import upsert_feedback
 
 router = APIRouter()
 
@@ -23,10 +24,17 @@ def get_feedback(video_id: int, db: Session = Depends(get_db)):
         hashtags = recommend_hashtags(db, video_id)
         similar_videos = recommend_similar_videos(db, video_id)
 
-        return FeedbackResponse(
+        #feedbackResponse 객체 생성
+        feedback_response = FeedbackResponse(
             titles=titles,
             hashtags=hashtags,
             similar_videos=similar_videos,
         )
+
+        # DB에 저장 / 업데이트
+        upsert_feedback(db, video_id=video_id, feedback=feedback_response)
+
+        return feedback_response
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"피드백 생성 실패: {e}")
