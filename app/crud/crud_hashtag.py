@@ -34,7 +34,6 @@ def update_or_create_hashtag(db: Session, hashtag_str: str, week_posts: int):
         history = HashtagHistory(
             hashtag=hashtag_str,
             week_posts=week_posts,
-            total_posts=new_total,
             collected_at=now
         )
         db.add(history)
@@ -60,7 +59,6 @@ def update_or_create_hashtag(db: Session, hashtag_str: str, week_posts: int):
         history = HashtagHistory(
             hashtag=hashtag_str,
             week_posts=week_posts,
-            total_posts=week_posts,
             collected_at=now
         )
         db.add(history)
