@@ -1,9 +1,10 @@
 # app/models/__init__.py
-# 앞으로 다른 모델 생기면 여기 계속 추가
 from .user import User
-from app.db.base import Base
+from .video import Video
+from .keyword import Keyword
+from .youtube import YouTubeVideo
+from .hashtag import Hashtag
+from .hashtag_history import HashtagHistory
+from .video_feedback import VideoFeedback
 
-from app.db.session import engine
-
-Base.metadata.create_all(engine)
-print("테이블 생성 완료")
+__all__ = ["User", "Video", "Keyword", "YouTubeVideo", "Hashtag","HashtagHistory", "VideoFeedback"]

@@ -123,4 +123,3 @@ async def unlink_kakao(current_user: dict = Depends(get_current_user_token), db:
             status_code=500,
             detail=f"카카오 연결 해제 중 오류 발생: {str(e)}"
         )
-
