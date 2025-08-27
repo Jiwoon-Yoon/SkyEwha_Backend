@@ -35,9 +35,4 @@ app = FastAPI(openapi_version="3.0.2", lifespan=lifespan)
 def ping():
     return {"message": "pong"}
 
-
-@app.get("/hello")
-def hello():
-    return {"message": "안녕하세요 파이보"}
-
 app.include_router(api_router)
