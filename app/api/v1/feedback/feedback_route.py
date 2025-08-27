@@ -19,6 +19,7 @@ from app.crud.crud_feedback import upsert_feedback
 router = APIRouter()
 
 @router.get("/my-feedbacks", response_model=List[FeedbackResponse])
+@router.get("/my-feedbacks", response_model=List[FeedbackResponse])
 def read_my_feedbacks(
     db: Session = Depends(deps.get_db),
     current_user: User = Depends(get_current_user)
@@ -26,8 +27,14 @@ def read_my_feedbacks(
     """
     로그인한 사용자의 모든 비디오 피드백 조회
     """
-    print("current user:", current_user.user_id)
-    return get_feedbacks_by_user_id(db, user_id = current_user.user_id)
+    try:
+        feedbacks = get_feedbacks_by_user_id(db, user_id=current_user.user_id)
+        if not feedbacks:
+            raise HTTPException(status_code=404, detail="해당 사용자의 피드백이 존재하지 않습니다.")
+        return feedbacks
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"피드백 조회 중 오류 발생: {e}")
+
 
 @router.get("/{video_id}", response_model=FeedbackResponse)
 def get_feedback(video_id: int, db: Session = Depends(get_db)):
