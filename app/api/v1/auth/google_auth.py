@@ -169,4 +169,3 @@ async def google_signup(data: auth.CompleteSignupRequest, db: Session = Depends(
             "email": new_user.user_email
         }
     }
-
