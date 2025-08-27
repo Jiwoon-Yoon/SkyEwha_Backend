@@ -1,8 +1,13 @@
 # app/api/v1/feedback/feedback_routes.py
+from typing import List
 from fastapi import APIRouter, Depends, HTTPException
+from app.api import deps
 from sqlalchemy.orm import Session
 from app.api.deps import get_db
+from app.core.auth import get_current_user
+from app.models.user import User
 from app.crud.crud_video import get_video_by_id
+from app.crud.crud_feedback import get_feedbacks_by_user_id
 from app.services.feedback_service import (
     recommend_titles,
     recommend_hashtags,
@@ -12,6 +17,17 @@ from app.schemas.feedback import FeedbackResponse
 from app.crud.crud_feedback import upsert_feedback
 
 router = APIRouter()
+
+@router.get("/my-feedbacks", response_model=List[FeedbackResponse])
+def read_my_feedbacks(
+    db: Session = Depends(deps.get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """
+    로그인한 사용자의 모든 비디오 피드백 조회
+    """
+    print("current user:", current_user.user_id)
+    return get_feedbacks_by_user_id(db, user_id = current_user.user_id)
 
 @router.get("/{video_id}", response_model=FeedbackResponse)
 def get_feedback(video_id: int, db: Session = Depends(get_db)):

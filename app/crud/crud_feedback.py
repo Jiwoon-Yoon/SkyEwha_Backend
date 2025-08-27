@@ -1,7 +1,11 @@
+from typing import List
 from sqlalchemy.orm import Session
 from datetime import datetime
+from app.models import Video
 from app.models.video_feedback import VideoFeedback
 from app.schemas.feedback import FeedbackResponse
+from app.schemas.youtube import YoutubeTitleResponse
+
 
 def get_feedback_by_video_id(db: Session, video_id: int) -> VideoFeedback | None:
     """
@@ -61,3 +65,28 @@ def delete_feedback(db: Session, video_id: int) -> bool:
     db.delete(db_feedback)
     db.commit()
     return True
+
+
+def get_feedbacks_by_user_id(db: Session, user_id: int) -> List[FeedbackResponse]:
+    """
+    특정 user_id의 모든 VideoFeedback 조회 후
+    FeedbackResponse 리스트로 반환
+    """
+    feedbacks = (
+        db.query(VideoFeedback)
+        .join(Video, VideoFeedback.video_id == Video.video_id)
+        .filter(Video.user_id == user_id)
+        .order_by(VideoFeedback.updated_at.desc())
+        .all()
+    )
+
+    return [
+        FeedbackResponse(
+            titles=fb.titles,
+            hashtags=fb.hashtags,
+            similar_videos=[
+                YoutubeTitleResponse(**sv) for sv in (fb.similar_videos or [])
+            ],
+        )
+        for fb in feedbacks
+    ]
