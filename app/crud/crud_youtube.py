@@ -36,6 +36,7 @@ def save_videos_to_db(videos: List[YoutubeVideoCreate], db: Session) -> None:
             tags=video.tags if video.tags else None,
             thumbnail_url=str(video.thumbnail_url) if video.thumbnail_url else None,
             video_url=str(video.video_url) if video.video_url else None,
+            view_count=video.view_count,
             embedding=embedding_vector
         )
 
@@ -65,3 +66,17 @@ def get_videos_by_keywords_similarity(db: Session, keywords: List[str], limit: i
 
     results = db.execute(stmt).all()  # List[Tuple[YouTubeVideo, float]]
     return results
+
+
+def get_top_videos_by_views(db: Session, limit: int = 3):
+    """
+    조회수 기준 인기 영상 가져오기
+    """
+    videos = (
+        db.query(YouTubeVideo.thumbnail_url)
+        .order_by(YouTubeVideo.view_count.desc())
+        .limit(limit)
+        .all()
+    )
+    # [(url1,), (url2,), (url3,)] 형태라서 리스트로 변환
+    return [v[0] for v in videos if v[0] is not None]

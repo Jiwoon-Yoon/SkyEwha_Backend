@@ -20,6 +20,7 @@ class YoutubeVideoCreate(BaseModel):
     tags: Optional[List[str]]
     thumbnail_url: Optional[HttpUrl]
     video_url: Optional[HttpUrl]
+    view_count: Optional[int] = 0
 
 
 # 3. 응답용 (Model -> Client로 리턴 시 사용)
@@ -32,6 +33,7 @@ class YoutubeVideo(BaseModel):
     tags: Optional[List[str]]
     thumbnail_url: Optional[HttpUrl]
     video_url: Optional[HttpUrl]
+    view_count: Optional[int] = 0
     created_at: datetime
 
 class KeywordSearchRequest(BaseModel):

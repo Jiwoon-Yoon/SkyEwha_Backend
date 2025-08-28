@@ -62,7 +62,7 @@ def fetch_video_details(video_ids):
     try:
         youtube = build('youtube', 'v3', developerKey=YOUTUBE_API_KEY)
         videos_response = youtube.videos().list(
-            part="snippet",
+            part="snippet,statistics",
             id=','.join(video_ids)
         ).execute()
 
@@ -82,6 +82,7 @@ def fetch_video_details(video_ids):
                 continue
 
             hashtags = extract_hashtags(description)
+            view_count = int(item.get('statistics', {}).get('viewCount', 0))
 
             try:
                 published_at = parser.isoparse(item['snippet']['publishedAt'])
@@ -97,6 +98,7 @@ def fetch_video_details(video_ids):
                 "tags": hashtags,
                 "thumbnail_url": item['snippet']['thumbnails']['high']['url'],
                 "video_url": f"https://www.youtube.com/watch?v={item['id']}",
+                "view_count": view_count,
                 "travel_score": score,  # 참고용 점수 포함 가능
             })
 
