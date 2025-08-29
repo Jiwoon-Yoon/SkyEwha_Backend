@@ -48,3 +48,6 @@ class YoutubeTitleResponse(BaseModel):
 
 class KeywordRecommendResponse(BaseModel):
     results: List[YoutubeTitleResponse]
+
+class PopularVideosResponse(BaseModel):
+    thumbnails: List[str]
