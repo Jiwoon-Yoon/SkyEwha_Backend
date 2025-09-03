@@ -12,6 +12,10 @@ from datetime import datetime
 
 from app.services.kakao_service import set_kakao_access_token
 
+# 추가: 앱으로 되돌릴 딥링크 스킴
+from fastapi.responses import RedirectResponse
+APP_SCHEME_CALLBACK = "trendie://oauth/callback"
+
 router = APIRouter()
 
 @router.get("/kakao/login_url")
@@ -22,13 +26,28 @@ def get_kakao_login_url():
     kakao_login_url = (
         f"{settings.kakao_auth_url}"
         f"?client_id={settings.kakao_client_id}"
+        # 추가: settings.kakao_login_redirect_url 은 반드시 공개 https + 본 라우트(/api/v1/auth/kakao/callback)를 가리켜야 함
         f"&redirect_uri={settings.kakao_login_redirect_url}"
         f"&response_type=code"
     )
     return {"login_url": kakao_login_url}
 
+
+# 추가(중요): 카카오 OAuth 콜백 → 앱 스킴으로 302 리다이렉트
+# - 카카오가 여기로 code를 전달함
+# - 백엔드는 앱 스킴으로 302 시켜서 안드로이드 앱 복귀
+@router.get("/login/kakao-callback")
+def kakao_callback(code: str):
+    """
+    카카오 OAuth 콜백을 백엔드가 받고 앱 스킴으로 302 리다이렉트
+    앱은 딥링크의 code를 꺼내 /api/v1/auth/kakao/login 에 넘김
+    """
+    redirect_url = f"{APP_SCHEME_CALLBACK}?provider=kakao&code={code}"
+    return RedirectResponse(url=redirect_url, status_code=302)
+
+
 # 사용자가 login_url로 들어가 로그인을 진행하면 인가 코드가 발급
-# 예시) http://localhost:3000/kakao-callback?code=abcdefg12345
+# 예시) https://skyewha-trendie.kr/api/v1/auth/kakao/callback?code=abcdefg12345
 
 # 1단계: 소셜 로그인 인증
 # 인가 코드에 관한 리턴값을 통해 신규/기존 회원 구분
@@ -41,7 +60,7 @@ async def kakao_login(data: auth.KakaoTokenRequest, db:Session = Depends(deps.ge
             data={
                 "grant_type": "authorization_code",
                 "client_id": settings.kakao_client_id,
-                "redirect_uri": settings.kakao_login_redirect_url,
+                "redirect_uri": settings.kakao_login_redirect_url,  # ← 위 login_url 과 동일해야 함
                 "code": data.code,
             },
             headers={"Content-Type": "application/x-www-form-urlencoded;charset=utf-8"}
@@ -59,10 +78,8 @@ async def kakao_login(data: auth.KakaoTokenRequest, db:Session = Depends(deps.ge
                     "code": data.code[:20] + "..." if len(data.code) > 20 else data.code
                 }
             }
-
             raise HTTPException(status_code=400, detail=error_info)
             # raise HTTPException(status_code=400, detail="카카오 인증 실패")
-
 
         # 카카오 인증 성공하면
         token_json = token_response.json()
@@ -75,15 +92,13 @@ async def kakao_login(data: auth.KakaoTokenRequest, db:Session = Depends(deps.ge
             settings.kakao_userInfo_url,
             headers={"Authorization":f"Bearer {access_token}"}
         )
-
         if user_response.status_code != 200:
             raise HTTPException(status_code=400, detail="사용자 정보 요청 실패")
 
-        # 사용자 정보 요청 성공하면
         # 사용자 정보 파싱
         user_info = user_response.json()
         kakao_id = user_info.get("id")
-        kakao_id=str(kakao_id)
+        kakao_id = str(kakao_id)
 
         # 카카오 계정 정보 추출
         kakao_account = user_info.get("kakao_account", {})
@@ -104,7 +119,7 @@ async def kakao_login(data: auth.KakaoTokenRequest, db:Session = Depends(deps.ge
             existing_user.user_is_active = True
             db.commit()
 
-            # Redis에 access_token 저장
+            # Redis에 access_token 저장 (토큰 저장/삭제는 기존 로그아웃·탈퇴 라우트와 동일 레이어) :contentReference[oaicite:2]{index=2}
             print(f"저장할 access_token: {access_token}")
             success = await set_kakao_access_token(str(existing_user.user_id), access_token)
             print(f"Redis 저장 성공 여부: {success}")
@@ -124,6 +139,7 @@ async def kakao_login(data: auth.KakaoTokenRequest, db:Session = Depends(deps.ge
                     "email": existing_user.user_email
                 }
             }
+
         # 신규 사용자: 임시 토큰 발급 (닉네임 입력 전용)
         temp_token = create_temp_token(subject=f"temp_{kakao_id}")
 
@@ -144,7 +160,6 @@ async def kakao_signup(
 ):
     # 임시 토큰 검증
     temp_subject = verify_token(data.temp_token, token_type="temp")
-
     if not temp_subject.startswith("temp_"):
         raise HTTPException(status_code=400, detail="유효하지 않은 임시 토큰")
 

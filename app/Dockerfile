@@ -9,12 +9,13 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 
-# requirements 설치
+# requirements 먼저 복사
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt
 
 #COPY . .
 # FastAPI 앱 복사
 COPY ./app ./app
 
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["gunicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
