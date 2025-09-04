@@ -42,6 +42,20 @@ services:
       - trendie
       - redis
 
+  scheduler:
+    build:
+      context: .
+      dockerfile: ./app/Dockerfile
+    container_name: youtube_scheduler
+    restart: always
+    environment:
+      - PYTHONPATH=/app
+    command: [ "python", "app/scheduler/youtube_scheduler.py" ]
+    env_file:
+      - .env
+    depends_on:
+      - trendie
+      - redis
 volumes:
   pgdata:
   redisdata:
