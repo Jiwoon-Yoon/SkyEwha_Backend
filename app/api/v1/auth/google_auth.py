@@ -6,7 +6,13 @@ from app.api import deps
 from app.schemas import auth
 from app.models import user
 from app.core.security import *
+from app.core.config import settings
 from app.services.google_service import set_google_access_token
+from datetime import datetime
+
+# 추가: 앱으로 되돌릴 딥링크 스킴
+from fastapi.responses import RedirectResponse
+APP_SCHEME_CALLBACK = "trendie://oauth/callback"
 
 router = APIRouter()
 
@@ -18,6 +24,7 @@ def get_google_login_url():
     url = (
         f"{settings.google_auth_url}"
         f"?client_id={settings.google_client_id}"
+        # settings.google_redirect_uri 는 공개 https + 본 라우트(/api/v1/auth/google/callback) 이어야 함
         f"&redirect_uri={settings.google_redirect_uri}"
         f"&response_type=code"
         f"&scope=openid%20email%20profile"
@@ -25,6 +32,18 @@ def get_google_login_url():
         f"&prompt=consent"
     )
     return {"login_url": url}
+
+
+# 추가(중요): 구글 OAuth 콜백 → 앱 스킴으로 302
+@router.get("/google/callback")
+def google_callback(code: str):
+    """
+    구글 OAuth 콜백을 백엔드가 받고 앱 스킴으로 302 리다이렉트
+    앱은 딥링크의 code를 꺼내 /api/v1/auth/google/login 으로 넘김
+    """
+    redirect_url = f"{APP_SCHEME_CALLBACK}?provider=google&code={code}"
+    return RedirectResponse(url=redirect_url, status_code=302)
+
 
 @router.post("/google/login")
 async def google_login(data: auth.GoogleTokenRequest, db: Session = Depends(deps.get_db)):
@@ -38,7 +57,7 @@ async def google_login(data: auth.GoogleTokenRequest, db: Session = Depends(deps
                 "code": data.code,
                 "client_id": settings.google_client_id,
                 "client_secret": settings.google_client_secret,
-                "redirect_uri": settings.google_redirect_uri,
+                "redirect_uri": settings.google_redirect_uri,  # ← 위 login_url과 동일
                 "grant_type": "authorization_code"
             },
             headers={"Content-Type": "application/x-www-form-urlencoded"}
@@ -128,6 +147,7 @@ async def google_login(data: auth.GoogleTokenRequest, db: Session = Depends(deps
             "google_access_token": access_token
         }
 
+
 @router.post("/google/signup", summary="구글 회원가입", description="닉네임 입력 후 회원가입")
 async def google_signup(data: auth.CompleteSignupRequest, db: Session = Depends(deps.get_db)):
     # 임시 토큰 검증
@@ -145,7 +165,6 @@ async def google_signup(data: auth.CompleteSignupRequest, db: Session = Depends(
         user_nickname=data.nickname,
         user_is_active=True,
         user_last_login=datetime.now()
-        # 기타 필드 추가 가능
     )
     db.add(new_user)
     db.commit()
