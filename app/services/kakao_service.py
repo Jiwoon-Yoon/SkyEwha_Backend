@@ -4,9 +4,10 @@ from typing import Optional
 from sqlalchemy.orm import Session
 from app.models import User
 import redis.asyncio as redis
+from app.core.config import settings
 
 # Redis 클라이언트 설정
-redis_client = redis.Redis(host='localhost', port=6379, db=0, decode_responses=True)
+redis_client = redis.Redis(host=settings.redis_host, port=6379, db=0, decode_responses=True)
 
 async def get_kakao_access_token(user_id: str) -> Optional[str]:
     """사용자의 카카오 액세스 토큰을 Redis에서 조회합니다."""

@@ -1,12 +1,11 @@
 # app/scheduler/youtube_scheduler.py
-
-from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.schedulers.blocking import BlockingScheduler
 from app.services.youtube_service import crawl_and_store
 from app.db.session import SessionLocal
 import logging
 
 logging.basicConfig(level=logging.INFO)
-scheduler = BackgroundScheduler()
+scheduler = BlockingScheduler()
 
 def youtube_job():
     db = SessionLocal()
@@ -20,7 +19,6 @@ def youtube_job():
         db.close()
 
 def start_scheduler():
-    # 1주일에 한 번 월요일 오전 3시 실행
     scheduler.add_job(
         youtube_job,
         trigger='cron',
@@ -30,3 +28,8 @@ def start_scheduler():
         id='weekly_youtube_crawl',
         replace_existing=True
     )
+    logging.info("[Scheduler] YouTube 스케줄러 시작")
+    scheduler.start()
+
+if __name__ == "__main__":
+    start_scheduler()
