@@ -1,11 +1,11 @@
 # app/scheduler/youtube_scheduler.py
-from apscheduler.schedulers.blocking import BlockingScheduler
+from apscheduler.schedulers.background import BackgroundScheduler
 from app.services.youtube_service import crawl_and_store
 from app.db.session import SessionLocal
 import logging
 
 logging.basicConfig(level=logging.INFO)
-scheduler = BlockingScheduler()
+scheduler = BackgroundScheduler(timezone="Asia/Seoul")
 
 def youtube_job():
     db = SessionLocal()

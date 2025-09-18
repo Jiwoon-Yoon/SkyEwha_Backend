@@ -22,6 +22,7 @@ def save_videos_to_db(videos: List[YoutubeVideoCreate], db: Session) -> None:
         if existing:
             # created_at만 최신으로 갱신
             existing.created_at = datetime.now()
+            existing.view_count = int(video.view_count) if video.view_count is not None else 0
             continue
 
         # OpenAI embedding 사용
@@ -36,7 +37,7 @@ def save_videos_to_db(videos: List[YoutubeVideoCreate], db: Session) -> None:
             tags=video.tags if video.tags else None,
             thumbnail_url=str(video.thumbnail_url) if video.thumbnail_url else None,
             video_url=str(video.video_url) if video.video_url else None,
-            view_count=video.view_count,
+            view_count=int(video.view_count) if video.view_count is not None else 0,
             embedding=embedding_vector
         )
 
