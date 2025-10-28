@@ -7,6 +7,8 @@ from sqlalchemy.orm import Session
 from app.schemas.youtube import YoutubeVideoCreate
 from app.core.config import settings
 from app.crud.crud_youtube import save_videos_to_db
+import requests
+import time
 
 # 임포트 추가
 from app.crawlers.text_processing import (
@@ -130,3 +132,51 @@ def crawl_and_store(keyword: str, db: Session) -> int:
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
+
+def store_videos(videos: list[dict], db: Session) -> int:
+    """
+    이미 가져온 영상 리스트를 그대로 DB에 저장 (여행 필터 없이)
+    임베딩 벡터 생성 포함
+    """
+    saved_count = 0
+    video_objs = []
+    for v in videos:
+        print(f"▶ 저장 대상: {v['title']} ({v['video_id']})")  # 프린트
+        video_objs.append(YoutubeVideoCreate(**v))
+        saved_count += 1
+
+    save_videos_to_db(video_objs, db)
+    return saved_count
+
+
+def get_uploads_playlist(channel_id: str) -> str:
+    url = f"https://www.googleapis.com/youtube/v3/channels?part=contentDetails&id={channel_id}&key={YOUTUBE_API_KEY}"
+    resp = requests.get(url).json()
+    return resp["items"][0]["contentDetails"]["relatedPlaylists"]["uploads"]
+
+def fetch_all_videos(playlist_id: str) -> list[dict]:
+    videos = []
+    url = "https://www.googleapis.com/youtube/v3/playlistItems"
+    params = {"part": "snippet", "playlistId": playlist_id, "maxResults": 50, "key": YOUTUBE_API_KEY}
+
+    while True:
+        resp = requests.get(url, params=params).json()
+        for item in resp.get("items", []):
+            snippet = item["snippet"]
+            videos.append({
+                "video_id": snippet["resourceId"]["videoId"],
+                "title": snippet["title"],
+                "description": snippet["description"],
+                "published_at": snippet["publishedAt"],
+                "channel_id": snippet["channelId"],
+                "channel_title": snippet["channelTitle"],
+                "tags": snippet.get("tags", []),  # tags가 없으면 빈 리스트
+                "thumbnail_url": snippet["thumbnails"]["default"]["url"] if "thumbnails" in snippet else "",
+                "video_url": f"https://www.youtube.com/watch?v={snippet['resourceId']['videoId']}"
+            })
+        if "nextPageToken" in resp:
+            params["pageToken"] = resp["nextPageToken"]
+            time.sleep(0.1)
+        else:
+            break
+    return videos
