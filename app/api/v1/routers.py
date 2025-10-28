@@ -1,7 +1,7 @@
 # app/api/v1/routers.py
 from fastapi import APIRouter
 from app.api.v1.auth import kakao_auth, kakao_logout_signout, google_auth, google_logout_signout, token
-from app.api.v1.youtube import youtube_routes
+from app.api.v1.youtube import youtube_routes, youtuber_routes
 from app.api.v1 import upload_video
 from app.api.v1 import keyword_generater
 from app.api.v1 import get_hashtag
@@ -22,3 +22,4 @@ api_router.include_router(get_hashtag.router, prefix="/api/v1/hashtag", tags=["H
 api_router.include_router(hashtag_feedback.router,prefix="/api/v1/recommend_hashtags", tags=["Hashtag"])
 api_router.include_router(feedback_route.router, prefix="/api/v1/feedback", tags=["feedback"])
 api_router.include_router(hashtag_trend.router, prefix="/api/v1/weekly_trend",tags=["weekly_trend"])
+api_router.include_router(youtuber_routes.router, prefix="/api/v1/youtube", tags=["YouTube"])
