@@ -18,7 +18,10 @@ def recommend_hashtags_from_keywords(db: Session, video_id: int, top_n: int = 10
     avg_embedding = np.mean(keyword_embeddings, axis=0)
 
     # 2. DB에서 모든 hashtag embedding 가져오기
-    hashtags = db.query(Hashtag).filter(Hashtag.embedding != None).all()
+    hashtags = db.query(Hashtag).filter(
+        Hashtag.embedding != None,
+        Hashtag.is_active == True
+    ).all()
     if not hashtags:
         return []
 

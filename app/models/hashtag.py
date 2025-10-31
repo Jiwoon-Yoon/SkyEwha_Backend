@@ -1,6 +1,6 @@
 # app/models/hashtag.py
 from app.db.base import Base
-from sqlalchemy import Column, Integer, String, BigInteger, Float, Date
+from sqlalchemy import Column, Integer, String, BigInteger, Float, Date, Boolean
 from pgvector.sqlalchemy import Vector
 
 class Hashtag(Base):
@@ -12,3 +12,4 @@ class Hashtag(Base):
     total_posts = Column(BigInteger, nullable=True)
     view_weight = Column(Float, nullable=True) # 조회수 기반 가중치
     last_updated = Column(Date, nullable=False)
+    is_active = Column(Boolean, nullable=False, default=True)
