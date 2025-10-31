@@ -1,5 +1,5 @@
 # app/models/youtube.py
-from sqlalchemy import Column, String, Text, DateTime, JSON, TIMESTAMP
+from sqlalchemy import Column, String, Text, DateTime, JSON, TIMESTAMP, Integer
 from sqlalchemy.sql import func
 from app.db.base import Base
 from pgvector.sqlalchemy import Vector  # 벡터 컬럼 추가
@@ -17,6 +17,7 @@ class YouTubeVideo(Base):
     video_url = Column(Text, nullable=True)                 # 유튜브 영상 URL
     created_at = Column(TIMESTAMP, server_default=func.now(), nullable=False)  # DB 저장 시각
     embedding = Column(Vector(1536), nullable=True)          # 임베딩 벡터 컬럼
+    view_count = Column(Integer, nullable=True, default=0)
 
     def __repr__(self):
         return f"<YouTubeVideo(id={self.video_id}, title={self.title}, channel={self.channel_title})>"
