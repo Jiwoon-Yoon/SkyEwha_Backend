@@ -36,6 +36,9 @@ class Settings(BaseSettings):
 
     openai_api_key: str
 
+    # .env 파일에 REDIS_HOST 변수가 없으면 'localhost'를 기본값으로 사용
+    redis_host: str = "redis"
+
     class Config:
         env_file = ".env"
 

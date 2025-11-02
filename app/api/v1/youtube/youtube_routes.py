@@ -3,8 +3,9 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.api.deps import get_db
 from app.services.youtube_service import crawl_and_store
-from app.schemas.youtube import KeywordSearchRequest, KeywordRecommendResponse, YoutubeTitleResponse
-from app.crud.crud_youtube import get_videos_by_keywords_similarity
+from app.schemas.youtube import KeywordSearchRequest, KeywordRecommendResponse, YoutubeTitleResponse, \
+    PopularVideosResponse
+from app.crud.crud_youtube import get_videos_by_keywords_similarity, get_top_videos_by_views
 
 router = APIRouter()
 
@@ -48,3 +49,31 @@ def keyword_search(
         traceback.print_exc()  # 전체 에러 스택 출력
         raise e  # 필요하면 다시 에러 올림
 
+
+@router.get(
+    "/popular",
+    summary="조회수 기준 인기 영상 Top 3",
+    response_model=PopularVideosResponse
+)
+def get_popular_videos(db: Session = Depends(get_db)):
+    """
+    조회수 기준으로 인기 영상 Top 3의 썸네일 URL만 반환합니다.
+    """
+    try:
+        thumbnails = get_top_videos_by_views(db, limit=3)
+
+        if not thumbnails:
+            raise HTTPException(
+                status_code=404,
+                detail="인기 영상을 찾을 수 없습니다."
+            )
+
+        return PopularVideosResponse(thumbnails=thumbnails)
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"서버 오류: {str(e)}"
+        )

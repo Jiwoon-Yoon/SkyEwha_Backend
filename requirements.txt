@@ -1,6 +1,7 @@
 #FastAPI 웹 서버
 fastapi~=0.116.0
 uvicorn[standard]
+gunicorn
 
 # OAuth 인증 (Google, Kakao 등) + HTTP 요청용
 httpx~=0.28.1
@@ -42,7 +43,6 @@ python-multipart>=0.0.6
 numpy==2.2.0
 
 # whisper, openai
-git+https://github.com/openai/whisper.git
 ffmpeg-python
 openai
 requests

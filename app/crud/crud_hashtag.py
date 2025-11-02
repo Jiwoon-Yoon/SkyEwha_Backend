@@ -49,7 +49,8 @@ def update_or_create_hashtag(db: Session, hashtag_str: str, week_posts: int):
             total_posts=week_posts,
             view_weight=float(calculate_view_weight(week_posts, week_posts)),
             last_updated=now,
-            embedding= embedding
+            embedding= embedding,
+            is_active = True
         )
         db.add(new_hashtag)
         db.commit()
@@ -70,6 +71,7 @@ def get_best_hashtags(db: Session, top_n: int = 10):
     hashtags = (
         db.query(Hashtag)
         .filter(Hashtag.total_posts != None)
+        .filter(Hashtag.is_active == True)
         .order_by(Hashtag.total_posts.desc())
         .limit(top_n)
         .all()
