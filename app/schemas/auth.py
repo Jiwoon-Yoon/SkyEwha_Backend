@@ -1,6 +1,6 @@
 # app/schemas/auth.py
 from typing import Optional
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 class KakaoTokenRequest(BaseModel):
     code: str
@@ -17,7 +17,7 @@ class GoogleTokenSaveRequest(BaseModel):
     access_token: str
 
 class CompleteSignupRequest(BaseModel):
-    nickname: str
+    nickname: str = Field(..., min_length=1, max_length=10, description="초기 사용자 닉네임")
     temp_token: str
     name: Optional[str] = None
     email: Optional[str] = None
