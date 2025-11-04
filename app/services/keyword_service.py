@@ -41,14 +41,19 @@ def extract_keywords(text: str) -> str:
 def parse_keywords(text: str) -> list[str]:
     return [tag.strip() for tag in re.findall(r"#([^\s#\"'\[\],]+)", text)]
 
-
-def send_keywords(db: Session, video_id: int, keywords: list[str]):
+def send_keywords(db: Session, feedback_id: int, keywords: list[str]):
+    """
+    GPT에서 파싱된 키워드를 임베딩하고 DB에 저장합니다.
+    video_id 대신 feedback_id를 사용하여 Keyword 테이블에 저장합니다.
+    """
     for keyword in keywords:
         # OpenAI 임베딩 생성
         embedding = get_embedding(keyword)
 
+        # 2. 키워드 DB에 저장
+        # ⭐ KeywordCreate 스키마와 crud_keyword.create 함수는 feedback_id를 받도록 수정되어야 합니다.
         keyword_data = KeywordCreate(
-            video_id= video_id,
+            feedback_id=feedback_id,
             keyword= keyword,
             embedding= embedding
         )

@@ -2,7 +2,7 @@
 from pydantic import BaseModel
 
 class TitleRequest(BaseModel):
-    video_id: int
+    feedback_id: int
 
 class TitleResponse(BaseModel):
     titles: list[str]

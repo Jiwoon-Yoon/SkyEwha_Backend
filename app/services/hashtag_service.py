@@ -2,15 +2,14 @@
 from sqlalchemy.orm import Session
 from typing import List
 import numpy as np
-from app.crud.crud_keyword import get_keywords_with_embeddings_by_video_id
+from app.crud.crud_keyword import get_keywords_with_embeddings_by_feedback_id
 from app.models.hashtag import Hashtag
-from app.models.keyword import Keyword
 from app.services.embedding_service import cosine_similarity
 
 
-def recommend_hashtags_from_keywords(db: Session, video_id: int, top_n: int = 10) -> List[str]:
-    # 1. video_id로 keyword + embedding 가져오기
-    db_keywords = get_keywords_with_embeddings_by_video_id(db, video_id)
+def recommend_hashtags_from_keywords(db: Session, feedback_id: int, top_n: int = 10) -> List[str]:
+    # 1. feedback_id로 keyword + embedding 가져오기
+    db_keywords = get_keywords_with_embeddings_by_feedback_id(db, feedback_id)
     if not db_keywords:
         return []
 
