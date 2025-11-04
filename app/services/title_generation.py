@@ -9,12 +9,12 @@ if not api_key:
     raise ValueError("OPENAI_API_KEY를 .env 파일에 설정해 주세요.")
 
 client = OpenAI(api_key=api_key)
-def generate_title_from_keywords(db: Session, video_id: int) -> list[str]:
+def generate_title_from_keywords(db: Session, feedback_id: int) -> list[str]:
     """
     200만 구독자 여행 유튜버를 위한
     키워드 기반 맞춤형 클릭률 높은 영상 제목 후보 3~5개 생성
     """
-    keywords = crud_keyword.get_keywords_by_video_id(db, video_id)
+    keywords = crud_keyword.get_keywords_by_feedback_id(db, feedback_id)
     keyword_str = ", ".join(keywords)
     prompt = f"""
 당신은 200만 구독자를 보유한 여행 유튜버를 위한 영상 제목 전문가입니다.

@@ -1,6 +1,6 @@
 # app/services/whisper_service.py
 import os
-import whisper
+#import whisper
 import tempfile
 import subprocess
 from openai import OpenAI
@@ -10,12 +10,12 @@ _openai_client = OpenAI(api_key=settings.openai_api_key)
 _local_model = None  # 전역 모델 캐싱
 
 
-def load_whisper_model(model_size="medium"):
-    global _local_model
-    if _local_model is None:
-        print("Whisper 모델 로드 중...")
-        _local_model = whisper.load_model(model_size)
-    return _local_model
+# def load_whisper_model(model_size="medium"):
+#     global _local_model
+#     if _local_model is None:
+#         print("Whisper 모델 로드 중...")
+#         _local_model = whisper.load_model(model_size)
+#     return _local_model
 
 
 def transcribe_audio(file_path: str, language="Korean", backend="openai") -> str:
@@ -51,10 +51,10 @@ def transcribe_audio(file_path: str, language="Korean", backend="openai") -> str
                 os.remove(tmp_out_path)
 
 
-    elif backend == "local":
-        model = load_whisper_model()
-        result = model.transcribe(file_path, language=language)
-        return result["text"]
+    # elif backend == "local":
+    #     model = load_whisper_model()
+    #     result = model.transcribe(file_path, language=language)
+    #     return result["text"]
 
     else:
         raise ValueError(f"지원하지 않는 backend: {backend}")
