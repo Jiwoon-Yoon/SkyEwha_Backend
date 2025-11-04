@@ -7,14 +7,14 @@ from app.api.deps import get_db
 from app.core.auth import get_current_user
 from app.models.user import User
 from app.crud.crud_video import get_video_by_id
-from app.crud.crud_feedback import get_feedbacks_by_user_id
+from app.crud.crud_content_feedback import get_feedbacks_by_user_id, get_content_feedback_by_feedback_id
 from app.services.feedback_service import (
     recommend_titles,
     recommend_hashtags,
     recommend_similar_videos,
 )
 from app.schemas.feedback import FeedbackResponse
-from app.crud.crud_feedback import upsert_feedback
+from app.crud.crud_content_feedback import upsert_content_feedback_by_feedback_id
 
 router = APIRouter()
 
@@ -35,16 +35,16 @@ def read_my_feedbacks(
         raise HTTPException(status_code=500, detail=f"피드백 조회 중 오류 발생: {e}")
 
 
-@router.get("/{video_id}", response_model=FeedbackResponse)
-def get_feedback(video_id: int, db: Session = Depends(get_db)):
-    video = get_video_by_id(db, video_id=video_id)
-    if not video:
-        raise HTTPException(status_code=404, detail="Video not found")
+@router.get("/{feedback_id}", response_model=FeedbackResponse)
+def get_feedback(feedback_id: int, db: Session = Depends(get_db)):
+    content = get_content_feedback_by_feedback_id(db, feedback_id=feedback_id)
+    if not content:
+        raise HTTPException(status_code=404, detail="Content not found")
 
     try:
-        titles = recommend_titles(db, video_id)
-        hashtags = recommend_hashtags(db, video_id)
-        similar_videos = recommend_similar_videos(db, video_id)
+        titles = recommend_titles(db, feedback_id)
+        hashtags = recommend_hashtags(db, feedback_id)
+        similar_videos = recommend_similar_videos(db, feedback_id)
 
         #feedbackResponse 객체 생성
         feedback_response = FeedbackResponse(
@@ -53,9 +53,9 @@ def get_feedback(video_id: int, db: Session = Depends(get_db)):
             similar_videos=similar_videos,
         )
 
-        # DB에 저장 / 업데이트
-        upsert_feedback(db, video_id=video_id, feedback=feedback_response)
 
+        # DB에 저장 / 업데이트
+        upsert_content_feedback_by_feedback_id(db, feedback_id=feedback_id, feedback=feedback_response)
         return feedback_response
 
     except Exception as e:
