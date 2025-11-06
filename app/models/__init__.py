@@ -6,5 +6,6 @@ from .youtube import YouTubeVideo
 from .hashtag import Hashtag
 from .hashtag_history import HashtagHistory
 from .content_feedback import ContentFeedback
+from .video_bookmark import VideoBookmark
 
-__all__ = ["User", "Video", "Keyword", "YouTubeVideo", "Hashtag","HashtagHistory", "ContentFeedback"]
+__all__ = ["User", "Video", "Keyword", "YouTubeVideo", "Hashtag","HashtagHistory", "ContentFeedback", "VideoBookmark"]
