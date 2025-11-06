@@ -2,7 +2,7 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import select
 import numpy as np
-from typing import List
+from typing import Optional,List
 from datetime import datetime
 from app.models.youtube import YouTubeVideo
 from app.schemas.youtube import YoutubeVideoCreate
@@ -81,3 +81,13 @@ def get_top_videos_by_views(db: Session, limit: int = 3):
     )
     # [(url1,), (url2,), (url3,)] 형태라서 리스트로 변환
     return [v[0] for v in videos if v[0] is not None]
+
+def get_video_by_id(db: Session, video_id: str) -> Optional[YouTubeVideo]:
+    """
+    video_id로 유튜브 영상 한 건 조회
+    """
+    return (
+        db.query(YouTubeVideo)
+        .filter(YouTubeVideo.video_id == video_id)
+        .first()
+    )
