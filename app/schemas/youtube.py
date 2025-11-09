@@ -40,6 +40,7 @@ class KeywordSearchRequest(BaseModel):
     keywords: List[str]
 
 class YoutubeTitleResponse(BaseModel):
+    video_id: str
     title: str
     video_url: Optional[str]
     thumbnail_url: Optional[str]

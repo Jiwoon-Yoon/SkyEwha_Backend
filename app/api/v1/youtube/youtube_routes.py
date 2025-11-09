@@ -34,6 +34,7 @@ def keyword_search(
         # → videos_with_scores: List[Tuple[YouTubeVideo, float]]
         results = [
             YoutubeTitleResponse(
+                video_id=video.video_id,
                 title=video.title,
                 video_url=video.video_url,
                 thumbnail_url=video.thumbnail_url,
