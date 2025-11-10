@@ -19,6 +19,7 @@ def recommend_similar_videos(db: Session, feedback_id: int, limit: int = 10) -> 
     videos_with_scores = get_videos_by_keywords_similarity(db, keywords, limit=limit)
     return [
         YoutubeTitleResponse(
+            video_id=vid.video_id,
             title=vid.title,
             video_url=vid.video_url,
             thumbnail_url=vid.thumbnail_url,
