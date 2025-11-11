@@ -146,6 +146,7 @@ def get_feedbacks_by_user_id(db: Session, user_id: int) -> List[FeedbackResponse
 
     return [
         FeedbackResponse(
+            source_title=fb.source_title,
             titles=fb.titles,
             hashtags=fb.hashtags,
             similar_videos=[
