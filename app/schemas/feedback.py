@@ -1,10 +1,10 @@
 # app/schemas/feedback.py
-from typing import List
+from typing import List, Optional
 from pydantic import BaseModel
 from app.schemas.youtube import YoutubeTitleResponse
 
 class FeedbackResponse(BaseModel):
-    source_title: str
-    titles: List[str]
-    hashtags: List[str]
-    similar_videos: List[YoutubeTitleResponse]
+    source_title: Optional[str] = None
+    titles: Optional[List[str]] = []
+    hashtags: Optional[List[str]] = []
+    similar_videos: Optional[List[YoutubeTitleResponse]] = []
