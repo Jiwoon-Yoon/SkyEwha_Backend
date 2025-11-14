@@ -1,11 +1,13 @@
 #app/api/v1/youtube/youtube_routes.py
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+from pydantic import BaseModel
 from app.api.deps import get_db
 from app.services.youtube_service import crawl_and_store
 from app.schemas.youtube import KeywordSearchRequest, KeywordRecommendResponse, YoutubeTitleResponse, \
-    PopularVideo, PopularVideosResponse
+     PopularVideosResponse
 from app.crud.crud_youtube import get_videos_by_keywords_similarity, get_top_videos_by_views
+from app.crawlers.text_processing import is_travel_video
 
 router = APIRouter()
 
@@ -82,3 +84,20 @@ def get_popular_videos(db: Session = Depends(get_db)):
             status_code=500,
             detail=f"서버 오류: {str(e)}"
         )
+
+class TravelTestInput(BaseModel):
+    text: str
+
+@router.post("/test-travel", summary="텍스트가 여행 영상인지 테스트")
+def test_travel(input: TravelTestInput):
+    try:
+        is_travel, prob = is_travel_video(input.text)
+        return {
+            "input": input.text,
+            "is_travel": is_travel,
+            "probability": prob
+        }
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return {"error": str(e)}
