@@ -1,3 +1,4 @@
+#app/services/youtube_service.py
 from datetime import datetime, timedelta
 from dateutil import parser
 from fastapi import HTTPException
@@ -13,7 +14,6 @@ import time
 # 임포트 추가
 from app.crawlers.text_processing import (
     extract_hashtags,
-    #is_excluded_video,
     is_travel_video,
 )
 
