@@ -40,6 +40,7 @@ class KeywordSearchRequest(BaseModel):
     keywords: List[str]
 
 class YoutubeTitleResponse(BaseModel):
+    video_id: str
     title: str
     video_url: Optional[str]
     thumbnail_url: Optional[str]
@@ -49,5 +50,9 @@ class YoutubeTitleResponse(BaseModel):
 class KeywordRecommendResponse(BaseModel):
     results: List[YoutubeTitleResponse]
 
+class PopularVideo(BaseModel):
+    video_id: str
+    thumbnail_url: HttpUrl
+
 class PopularVideosResponse(BaseModel):
-    thumbnails: List[str]
+    results: List[PopularVideo]

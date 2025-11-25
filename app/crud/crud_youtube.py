@@ -2,10 +2,10 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import select
 import numpy as np
-from typing import List
+from typing import Optional,List
 from datetime import datetime
 from app.models.youtube import YouTubeVideo
-from app.schemas.youtube import YoutubeVideoCreate
+from app.schemas.youtube import YoutubeVideoCreate, PopularVideo
 from app.crawlers.text_processing import get_embedding as get_openai_embedding
 
 
@@ -69,15 +69,26 @@ def get_videos_by_keywords_similarity(db: Session, keywords: List[str], limit: i
     return results
 
 
-def get_top_videos_by_views(db: Session, limit: int = 3):
-    """
-    조회수 기준 인기 영상 가져오기
-    """
-    videos = (
-        db.query(YouTubeVideo.thumbnail_url)
+def get_top_videos_by_views(db: Session, limit: int = 3) -> List[PopularVideo]:
+    rows = (
+        db.query(YouTubeVideo)
+        .filter(YouTubeVideo.thumbnail_url.isnot(None))
         .order_by(YouTubeVideo.view_count.desc())
         .limit(limit)
         .all()
     )
-    # [(url1,), (url2,), (url3,)] 형태라서 리스트로 변환
-    return [v[0] for v in videos if v[0] is not None]
+
+    return [
+        PopularVideo(video_id=v.video_id, thumbnail_url=v.thumbnail_url)
+        for v in rows
+    ]
+
+def get_video_by_id(db: Session, video_id: str) -> Optional[YouTubeVideo]:
+    """
+    video_id로 유튜브 영상 한 건 조회
+    """
+    return (
+        db.query(YouTubeVideo)
+        .filter(YouTubeVideo.video_id == video_id)
+        .first()
+    )

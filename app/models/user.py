@@ -20,8 +20,10 @@ class User(Base):
         UniqueConstraint("user_social_id","user_provider",name="uix_social_provider"),
     )
 
-    videos = relationship("Video", back_populates="user", cascade="all, delete-orphan")  # videos 관계 추가
-
+    videos = relationship("Video", back_populates="user", cascade="all, delete-orphan")  # video가 user를 참조
+    content_feedbacks = relationship("ContentFeedback", back_populates="user", cascade="all, delete-orphan") #content_feedback이 user를 참조
+    video_bookmarks = relationship("VideoBookmark", back_populates="user", cascade="all, delete-orphan")
+    
     # 입력된 객체 확인을(디버깅이나 로깅) 위해 사용
     def __repr__(self):
         return f"<User(user_id={self.user_id}, user_email={self.user_email}, user_nickname={self.user_nickname})>"

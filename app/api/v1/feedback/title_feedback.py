@@ -12,7 +12,7 @@ def recommend_title(
     db: Session = Depends(deps.get_db)
 ):
     try:
-        titles = generate_title_from_keywords(db, request.video_id)
+        titles = generate_title_from_keywords(db, request.feedback_id)
         return {"titles": titles}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"제목 생성 실패: {e}")

@@ -1,11 +1,13 @@
 #app/api/v1/youtube/youtube_routes.py
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+from pydantic import BaseModel
 from app.api.deps import get_db
 from app.services.youtube_service import crawl_and_store
 from app.schemas.youtube import KeywordSearchRequest, KeywordRecommendResponse, YoutubeTitleResponse, \
-    PopularVideosResponse
+     PopularVideosResponse
 from app.crud.crud_youtube import get_videos_by_keywords_similarity, get_top_videos_by_views
+from app.crawlers.text_processing import is_travel_video
 
 router = APIRouter()
 
@@ -34,6 +36,7 @@ def keyword_search(
         # → videos_with_scores: List[Tuple[YouTubeVideo, float]]
         results = [
             YoutubeTitleResponse(
+                video_id=video.video_id,
                 title=video.title,
                 video_url=video.video_url,
                 thumbnail_url=video.thumbnail_url,
@@ -53,27 +56,48 @@ def keyword_search(
 @router.get(
     "/popular",
     summary="조회수 기준 인기 영상 Top 3",
-    response_model=PopularVideosResponse
+    response_model=PopularVideosResponse,
 )
 def get_popular_videos(db: Session = Depends(get_db)):
     """
-    조회수 기준으로 인기 영상 Top 3의 썸네일 URL만 반환합니다.
+    조회수 기준으로 인기 영상 Top 3의 썸네일 URL과 video_id를 반환합니다.
     """
-    try:
-        thumbnails = get_top_videos_by_views(db, limit=3)
+    import traceback
 
-        if not thumbnails:
+    try:
+        videos = get_top_videos_by_views(db, limit=3)
+        # videos: List[PopularVideo]
+
+        if not videos:
             raise HTTPException(
                 status_code=404,
                 detail="인기 영상을 찾을 수 없습니다."
             )
 
-        return PopularVideosResponse(thumbnails=thumbnails)
+        return PopularVideosResponse(results=videos)
 
     except HTTPException:
         raise
     except Exception as e:
+        traceback.print_exc()
         raise HTTPException(
             status_code=500,
             detail=f"서버 오류: {str(e)}"
         )
+
+class TravelTestInput(BaseModel):
+    text: str
+
+@router.post("/test-travel", summary="텍스트가 여행 영상인지 테스트")
+def test_travel(input: TravelTestInput):
+    try:
+        is_travel, prob = is_travel_video(input.text)
+        return {
+            "input": input.text,
+            "is_travel": is_travel,
+            "probability": prob
+        }
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return {"error": str(e)}

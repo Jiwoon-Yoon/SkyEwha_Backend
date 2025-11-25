@@ -1,5 +1,6 @@
 # app/models/youtube.py
 from sqlalchemy import Column, String, Text, DateTime, JSON, TIMESTAMP, Integer
+from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from app.db.base import Base
 from pgvector.sqlalchemy import Vector  # 벡터 컬럼 추가
@@ -18,6 +19,8 @@ class YouTubeVideo(Base):
     created_at = Column(TIMESTAMP, server_default=func.now(), nullable=False)  # DB 저장 시각
     embedding = Column(Vector(1536), nullable=True)          # 임베딩 벡터 컬럼
     view_count = Column(Integer, nullable=True, default=0)
+
+    bookmarks = relationship("VideoBookmark", back_populates="video", cascade="all, delete-orphan")
 
     def __repr__(self):
         return f"<YouTubeVideo(id={self.video_id}, title={self.title}, channel={self.channel_title})>"

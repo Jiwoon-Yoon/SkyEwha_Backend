@@ -44,5 +44,7 @@ numpy==2.2.0
 
 # whisper, openai
 ffmpeg-python
-openai
-requests
+openai~=1.98.0
+requests~=2.32.4
+
+joblib~=1.5.1
