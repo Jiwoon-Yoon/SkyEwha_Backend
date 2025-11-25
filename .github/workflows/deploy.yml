@@ -28,6 +28,9 @@ jobs:
         file: ./app/Dockerfile
         push: true
         tags: ${{ secrets.DOCKER_USERNAME }}/trendie-image:latest
+        # Github Actions 캐시 위해 추가
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
 
     # 3. docker-compose.prod.yml 파일을 EC2로 복사
     - name: Copy Docker Compose file to EC2
