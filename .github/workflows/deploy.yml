@@ -1,0 +1,105 @@
+# .github/workflows/deploy.yml
+name: CI/CD Docker Compose Deploy
+
+on:
+  push:
+    branches: [ main ] # main 브랜치에 push 될 경우 배포
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    # 1. Docker Hub 로그인
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+    # 2. 이미지 빌드 및 push (FastAPI와 Scheduler가 같은 이미지를 공유)
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v4
+      with:
+        context: .
+        file: ./app/Dockerfile
+        push: true
+        tags: ${{ secrets.DOCKER_USERNAME }}/trendie-image:latest
+
+    # 3. docker-compose.prod.yml 파일을 EC2로 복사
+    - name: Copy Docker Compose file to EC2
+      uses: appleboy/scp-action@master
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ${{ secrets.EC2_USER }}
+        key: ${{ secrets.EC2_SSH_KEY }}
+        source: "docker-compose.prod.yml"
+        target: "/home/${{ secrets.EC2_USER }}/"
+
+    # 4. EC2에 접속해서 배포 실행
+    - name: Deploy to EC2
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ${{ secrets.EC2_USER }}
+        key: ${{ secrets.EC2_SSH_KEY }}
+        script: |
+          # 홈 디렉토리로 이동
+          cd /home/${{ secrets.EC2_USER }}
+          
+          # .env 파일 생성 (Secrets에 있는 내용을 서버에 파일로 만듦)
+          # [기본 설정 및 DB]
+          echo "DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}" > .env
+          echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> .env
+          echo "POSTGRES_DB=${{ secrets.POSTGRES_DB }}" >> .env
+          echo "POSTGRES_USER=${{ secrets.POSTGRES_USER }}" >> .env
+          echo "POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}" >> .env
+          echo "REDIS_HOST=${{ secrets.REDIS_HOST }}" >> .env
+          
+          # [Google Auth]
+          echo "GOOGLE_AUTH_URL=${{ secrets.GOOGLE_AUTH_URL }}" >> .env
+          echo "GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}" >> .env
+          echo "GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}" >> .env
+          echo "GOOGLE_REDIRECT_URI=${{ secrets.GOOGLE_REDIRECT_URI }}" >> .env
+          echo "GOOGLE_TOKEN_URL=${{ secrets.GOOGLE_TOKEN_URL }}" >> .env
+          
+          # [Kakao Auth]
+          echo "KAKAO_ADMIN_KEY=${{ secrets.KAKAO_ADMIN_KEY }}" >> .env
+          echo "KAKAO_AUTH_URL=${{ secrets.KAKAO_AUTH_URL }}" >> .env
+          echo "KAKAO_CLIENT_ID=${{ secrets.KAKAO_CLIENT_ID }}" >> .env
+          echo "KAKAO_LOGIN_REDIRECT_URL=${{ secrets.KAKAO_LOGIN_REDIRECT_URL }}" >> .env
+          echo "KAKAO_LOGOUT=${{ secrets.KAKAO_LOGOUT }}" >> .env
+          echo "KAKAO_LOGOUT_REDIRECT_URL=${{ secrets.KAKAO_LOGOUT_REDIRECT_URL }}" >> .env
+          echo "KAKAO_SECRET=${{ secrets.KAKAO_SECRET }}" >> .env
+          echo "KAKAO_TOKEN_URL=${{ secrets.KAKAO_TOKEN_URL }}" >> .env
+          echo "KAKAO_UNLINK=${{ secrets.KAKAO_UNLINK }}" >> .env
+          echo "KAKAO_USERINFO_URL=${{ secrets.KAKAO_USERINFO_URL }}" >> .env
+          
+          # [App Secrets & APIs]
+          echo "JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}" >> .env
+          echo "OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}" >> .env
+          echo "YOUTUBE_API_KEY=${{ secrets.YOUTUBE_API_KEY }}" >> .env
+          echo "MAX_RESULTS=${{ secrets.MAX_RESULTS }}" >> .env
+          echo "REGION_CODE=${{ secrets.REGION_CODE }}" >> .env
+          echo "TOP_KEYWORDS=${{ secrets.TOP_KEYWORDS }}" >> .env
+          echo "TRAVEL_SCORE_THRESHOLD=${{ secrets.TRAVEL_SCORE_THRESHOLD }}" >> .env
+          
+          # [Trend Analysis & Files]
+          echo "UPLOAD_DIR=${{ secrets.UPLOAD_DIR }}" >> .env
+          
+          # Docker Hub 로그인 (Private 이미지일 경우 대비)
+          echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+          
+          # 최신 이미지 Pull
+          docker pull ${{ secrets.DOCKER_USERNAME }}/trendie-image:latest
+          
+          # Docker Compose 실행 (기존 컨테이너는 내리고, 새 설정으로 올림)
+          # -f 옵션으로 prod 파일을 지정합니다.
+          docker compose -f docker-compose.prod.yml down
+          docker compose -f docker-compose.prod.yml up -d
+          
+          # 불필요한 이미지 정리
+          docker image prune -f
