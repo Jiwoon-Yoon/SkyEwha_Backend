@@ -21,6 +21,8 @@ jobs:
         password: ${{ secrets.DOCKER_PASSWORD }}
 
     # 2. 이미지 빌드 및 push (FastAPI와 Scheduler가 같은 이미지를 공유)
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2 # 캐시 위해 추가
     - name: Build and push Docker image
       uses: docker/build-push-action@v4
       with:
