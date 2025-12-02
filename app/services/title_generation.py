@@ -31,7 +31,7 @@ def generate_title_from_keywords(db: Session, feedback_id: int) -> list[str]:
         model="gpt-4",
         messages=[{"role": "user", "content": prompt}],
         temperature=0.7,
-        max_tokens=150
+        max_tokens=350
     )
     text = response.choices[0].message.content.strip()
     titles = [line.strip("- ").strip() for line in text.splitlines() if line.strip()]
