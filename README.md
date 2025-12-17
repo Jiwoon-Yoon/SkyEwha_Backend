@@ -69,7 +69,8 @@ Trendie Backend는 이러한 기능을 구현하기 위해 다음 역할을 수�
 - Cache: Redis  
 - Scheduler: APScheduler  
 - 외부 API/AI: OpenAI API(**Embedding**, **Whisper**), YouTube Data API v3  
-- 인증: JWT, Kakao OAuth, Google OAuth  
+- 인증: JWT, Kakao OAuth, Google OAuth
+- Infra & DevOps: AWS EC2, Docker, Docker Compose, GitHub Actions
 
 ---
 
@@ -119,6 +120,20 @@ docker compose down
 * `fastapi`: FastAPI 서버
 * `scheduler`: YouTube 수집 배치 컨테이너 (`python app/scheduler/youtube_scheduler.py`)
 
+---
+
+## 🚢 CI/CD 파이프라인
+
+GitHub Actions와 Docker를 활용하여 **자동화된 배포 환경**을 구축했습니다.
+`main` 브랜치에 코드가 푸시되면 자동으로 빌드 및 배포가 진행됩니다.
+
+### ♻️ 배포 프로세스 (GitHub Actions)
+1.  **Build & Push (CI)**
+    * Docker Image 빌드 및 Docker Hub 푸시
+    * **Build Cache 적용**: GitHub Actions Cache(`type=gha, mode=max`)를 도입하여 PyTorch, Whisper 등 고용량 AI 라이브러리의 빌드 시간을 획기적으로 단축
+2.  **Deploy (CD)**
+    * AWS EC2에 SSH 접속 (`appleboy/ssh-action`)
+    * `docker-compose`를 통해 최신 이미지 Pull 및 컨테이너 재실행 (환경변수 보안 주입)
 ---
 
 ## ⚙️ 환경 변수(.env) 예시
