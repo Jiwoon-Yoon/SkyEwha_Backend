@@ -141,6 +141,15 @@ docker compose down
 ```
 
 ---
+## 🗃️ 데이터베이스
+
+pgvector 사용 시 환경에 따라 확장 활성화가 필요할 수 있습니다.
+
+```sql
+CREATE EXTENSION IF NOT EXISTS vector;
+```
+
+---
 ## 🧪 테스트 방법
 
 > 사전 조건: 위 **실행 방법**의 ~2)까지 완료(컨테이너 실행 상태)
@@ -199,15 +208,6 @@ GitHub Actions와 Docker를 활용하여 **자동화된 배포 환경**을 구�
 
 ---
 
-## 🗃️ 데이터베이스
-
-pgvector 사용 시 환경에 따라 확장 활성화가 필요할 수 있습니다.
-
-```sql
-CREATE EXTENSION IF NOT EXISTS vector;
-```
-
----
 ## 📚 사용한 오픈소스 / 외부 서비스
 - FastAPI
 - SQLAlchemy / Alembic
