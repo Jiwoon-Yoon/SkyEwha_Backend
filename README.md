@@ -183,7 +183,6 @@ UPLOAD_DIR=/app/upload_videos
 ## 🔗 링크
 
 * Frontend Repo: https://github.com/Ewha-SkyEwha/SkyEwha_Front
-* Backend Repo: https://github.com/Ewha-SkyEwha/SkyEwha_Backend
 * 틱톡 Creative Center 크롤러: https://github.com/Ewha-SkyEwha/SkyEwha_Tiktok_Crawling
 
 ---
