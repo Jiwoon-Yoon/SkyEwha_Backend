@@ -134,13 +134,13 @@ docker compose down
 docker compose ps
 ```
 
-### 3) API 동작 확인
+### 2) API 동작 확인
 
 ```bash
 curl -i http://localhost:8000/ping
 ```
 
-### 4) 종료
+### 3) 종료
 
 ```bash
 docker compose down
@@ -192,6 +192,15 @@ CREATE EXTENSION IF NOT EXISTS vector;
 ```
 
 ---
-
+## 📚 사용한 오픈소스 / 외부 서비스
+- FastAPI
+- SQLAlchemy / Alembic
+- PostgreSQL, pgvector
+- Redis
+- APScheduler
+- Docker / Docker Compose
+- OpenAI API (Embedding, Whisper)
+- YouTube Data API v3
+---
 
 
