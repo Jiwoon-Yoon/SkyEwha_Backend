@@ -187,7 +187,7 @@ docker compose ps
 ### 3) API 동작 확인
 
 ```bash
-curl -I http://localhost:8000/docs
+curl -i http://localhost:8000/ping
 ```
 
 ### 4) 종료
