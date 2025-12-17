@@ -83,8 +83,24 @@ Trendie Backend는 이러한 기능을 구현하기 위해 다음 역할을 수�
 > STT/오디오 처리 기능을 사용하는 경우 환경에 따라 ffmpeg 설치가 필요할 수 있습니다.
 
 ---
+## 💻 로컬 설치 & 빌드 방법
 
-## 🚀 실행 방법 (Docker Compose)
+Docker 없이 로컬에서 실행하려면:
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+
+cp .env.example .env
+# 로컬 실행 시 DATABASE_URL의 host를 환경에 맞게 설정
+
+alembic upgrade head
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+```
+---
+
+## 🚀 설치 & 빌드 방법 (Docker Compose)
 
 ### 0) 📥 레포지토리 클론
 
