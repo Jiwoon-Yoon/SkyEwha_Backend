@@ -125,6 +125,27 @@ docker compose down
 ```
 
 ---
+## 🧪 테스트 방법
+
+> 사전 조건: 위 **실행 방법**의 ~2)까지 완료(컨테이너 실행 상태)
+
+### 1) 컨테이너 상태 확인
+```bash
+docker compose ps
+```
+
+### 3) API 동작 확인
+
+```bash
+curl -i http://localhost:8000/ping
+```
+
+### 4) 종료
+
+```bash
+docker compose down
+```
+---
 
 ## 🐳 Docker Compose 구성
 
@@ -171,30 +192,6 @@ CREATE EXTENSION IF NOT EXISTS vector;
 ```
 
 ---
-## 🧪 테스트 방법
-
-### 1) 컨테이너 실행
-```bash
-docker compose up -d --build
-````
-
-### 2) 컨테이너 상태 확인
-
-```bash
-docker compose ps
-```
-
-### 3) API 동작 확인
-
-```bash
-curl -i http://localhost:8000/ping
-```
-
-### 4) 종료
-
-```bash
-docker compose down
-```
 
 
 
