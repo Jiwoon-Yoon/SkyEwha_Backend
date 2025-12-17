@@ -171,5 +171,30 @@ CREATE EXTENSION IF NOT EXISTS vector;
 ```
 
 ---
+## 🧪 테스트 방법
+
+### 1) 컨테이너 실행
+```bash
+docker compose up -d --build
+````
+
+### 2) 컨테이너 상태 확인
+
+```bash
+docker compose ps
+```
+
+### 3) API 동작 확인
+
+```bash
+curl -I http://localhost:8000/docs
+```
+
+### 4) 종료
+
+```bash
+docker compose down
+```
+
 
 
