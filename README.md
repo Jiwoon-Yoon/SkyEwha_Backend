@@ -97,7 +97,12 @@ cd SkyEwha_Backend
 
 ### 1) 환경 변수 설정
 
-프로젝트 루트에 `.env` 파일을 생성한 뒤 값을 채워주세요.
+프로젝트 루트에 `.env`를 생성하세요.
+
+```bash
+cp .env.example .env
+# .env 값 채운 뒤 실행
+```
 
 ### 2) 실행
 
@@ -105,7 +110,15 @@ cd SkyEwha_Backend
 docker compose up -d --build
 ```
 
-### 3) 종료
+### 3) 마이그레이션
+DB 스키마가 필요한 경우(최초 실행/스키마 변경 시) 마이그레이션을 수행하세요.
+```bash
+# fastapi 컨테이너 안에서 Alembic 실행 (서비스명이 fastapi일 때)
+docker compose exec fastapi alembic upgrade head
+```
+> docker-compose.yml에서 FastAPI 서비스명이 다르면 fastapi 부분만 바꿔주세요.
+
+### 4) 종료
 
 ```bash
 docker compose down
@@ -134,59 +147,6 @@ GitHub Actions와 Docker를 활용하여 **자동화된 배포 환경**을 구�
 2.  **Deploy (CD)**
     * AWS EC2에 SSH 접속 (`appleboy/ssh-action`)
     * `docker-compose`를 통해 최신 이미지 Pull 및 컨테이너 재실행 (환경변수 보안 주입)
----
-
-## ⚙️ 환경 변수(.env) 예시
-
-> **주의:** 아래 예시는 키 이름 형태만 보여주기 위한 것으로, 실제 키/시크릿은 절대 커밋하지 마세요.
-
-```env
-# Docker Hub (배포용 compose에서 사용)
-DOCKER_USERNAME=YOUR_DOCKERHUB_USERNAME
-
-# Database
-POSTGRES_USER=YOUR_DB_USER
-POSTGRES_PASSWORD=YOUR_DB_PASSWORD
-POSTGRES_DB=YOUR_DB_NAME
-DATABASE_URL=postgresql+psycopg2://YOUR_DB_USER:YOUR_DB_PASSWORD@trendie:5432/YOUR_DB_NAME
-
-# Redis
-REDIS_HOST=redis
-
-# JWT
-JWT_SECRET_KEY=YOUR_JWT_SECRET_KEY
-
-# Kakao OAuth
-KAKAO_TOKEN_URL=https://kauth.kakao.com/oauth/token
-KAKAO_AUTH_URL=https://kauth.kakao.com/oauth/authorize
-KAKAO_USERINFO_URL=https://kapi.kakao.com/v2/user/me
-KAKAO_CLIENT_ID=YOUR_KAKAO_CLIENT_ID
-KAKAO_SECRET=YOUR_KAKAO_SECRET
-KAKAO_LOGIN_REDIRECT_URL=YOUR_KAKAO_REDIRECT_URL
-KAKAO_LOGOUT=https://kauth.kakao.com/oauth/logout
-KAKAO_UNLINK=https://kapi.kakao.com/v1/user/unlink
-KAKAO_LOGOUT_REDIRECT_URL=YOUR_KAKAO_LOGOUT_REDIRECT_URL
-KAKAO_ADMIN_KEY=YOUR_KAKAO_ADMIN_KEY
-
-# Google OAuth
-GOOGLE_AUTH_URL=https://accounts.google.com/o/oauth2/v2/auth
-GOOGLE_TOKEN_URL=https://oauth2.googleapis.com/token
-GOOGLE_CLIENT_ID=YOUR_GOOGLE_CLIENT_ID
-GOOGLE_CLIENT_SECRET=YOUR_GOOGLE_CLIENT_SECRET
-GOOGLE_REDIRECT_URI=YOUR_GOOGLE_REDIRECT_URI
-
-# YouTube API
-YOUTUBE_API_KEY=YOUR_YOUTUBE_API_KEY
-REGION_CODE=KR
-MAX_RESULTS=50
-
-# OpenAI
-OPENAI_API_KEY=YOUR_OPENAI_API_KEY
-
-# Upload
-UPLOAD_DIR=/app/upload_videos
-```
-
 ---
 
 ## 📄 API 문서
