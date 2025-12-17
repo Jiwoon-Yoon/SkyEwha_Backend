@@ -176,15 +176,15 @@ UPLOAD_DIR=/app/upload_videos
 
 ## 📄 API 문서
 
-* 로컬 Swagger: `http://localhost:8000/docs`
-* 서버 Swagger: `https://skyewha-trendie.kr/docs#/`
+* 로컬 Swagger: http://localhost:8000/docs
+* 서버 Swagger: https://skyewha-trendie.kr/docs#/
 
 ---
 ## 🔗 링크
 
-* Frontend Repo: `https://github.com/Ewha-SkyEwha/SkyEwha_Front`
-* Backend Repo: `https://github.com/Ewha-SkyEwha/SkyEwha_Backend`
-* 틱톡 Creative Center 크롤러: `https://github.com/Ewha-SkyEwha/SkyEwha_Tiktok_Crawling`
+* Frontend Repo: https://github.com/Ewha-SkyEwha/SkyEwha_Front
+* Backend Repo: https://github.com/Ewha-SkyEwha/SkyEwha_Backend
+* 틱톡 Creative Center 크롤러: https://github.com/Ewha-SkyEwha/SkyEwha_Tiktok_Crawling
 
 ---
 
