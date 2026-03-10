@@ -3,7 +3,7 @@ name: CI/CD Docker Compose Deploy
 
 on:
   push:
-    branches: [ main ] # main 브랜치에 push 될 경우 배포
+    branches: [ test/cicd ] # test/cicd 브랜치에 push 될 경우 배포
 
 jobs:
   build-and-deploy:
