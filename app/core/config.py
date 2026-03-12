@@ -1,6 +1,5 @@
 # app/core/config.py
-from pydantic_settings import BaseSettings
-
+from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     DATABASE_URL : str
     kakao_token_url : str
@@ -39,7 +38,9 @@ class Settings(BaseSettings):
     # .env 파일에 REDIS_HOST 변수가 없으면 'localhost'를 기본값으로 사용
     redis_host: str = "redis"
 
-    class Config:
-        env_file = ".env"
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        extra="ignore"  # 정의되지 않은 변수가 있어도 에러내지 말고 무시
+    )
 
 settings = Settings()

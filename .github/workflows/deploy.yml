@@ -3,7 +3,8 @@ name: CI/CD Docker Compose Deploy
 
 on:
   push:
-    branches: [ main ] # main 브랜치에 push 될 경우 배포
+    # branches: [ main ] # main 브랜치에 push 될 경우 배포
+    branches: [ test/cicd ] # main 브랜치에 push 될 경우 배포
 
 jobs:
   build-and-deploy:
@@ -12,6 +13,24 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
+
+# --- [Step 1: 검증 단계] ---
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12' # 로컬 버전과 맞춤
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+      # pytest와 pytest-asyncio는 requirements.txt에 추가했으므로 자동으로 설치됨
+
+    - name: Run Pytest
+      run: |
+        pytest 
+
+# --- [Step 2: 배포 준비 단계 (테스트 통과 시에만)] ---
 
     # 1. Docker Hub 로그인
     - name: Log in to Docker Hub
