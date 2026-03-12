@@ -27,6 +27,36 @@ jobs:
       # pytest와 pytest-asyncio는 requirements.txt에 추가했으므로 자동으로 설치됨
 
     - name: Run Pytest
+      env:
+        # Pydantic Settings가 요구하는 필수 값들을 가짜로 정의 (에러 방지용)
+        DATABASE_URL:
+          sqlite:///:memory:
+        kakao_token_url: https://fake.com
+        kakao_userInfo_url: https://fake.com
+        kakao_client_id: fake_id
+        kakao_login_redirect_url: https://fake.com
+        kakao_auth_url: https://fake.com
+        kakao_secret: fake_secret
+        jwt_secret_key: fake_key
+        kakao_logout: https://fake.com
+        kakao_unlink: https://fake.com
+        kakao_logout_redirect_url: https://fake.com
+        kakao_admin_key: fake_key
+        google_client_id: fake_id
+        google_client_secret: fake_secret
+        google_redirect_uri: https://fake.com
+        google_auth_url: https://fake.com
+        google_token_url: https://fake.com
+        POSTGRES_USER: user
+        POSTGRES_PASSWORD: password
+        POSTGRES_DB: db
+        youtube_api_key: fake_key
+        region_code: KR
+        max_results: 10
+        top_keywords: "[]"
+        travel_score_threshold: 0.5
+        upload_dir: ./uploads
+        openai_api_key: fake_key
       run: |
         pytest 
 
