@@ -52,8 +52,8 @@ jobs:
         youtube_api_key: fake_key
         region_code: KR
         max_results: 10
-        top_keywords: "[]"
-        travel_score_threshold: 0.5
+        top_keywords: 1
+        travel_score_threshold: 1
         upload_dir: ./uploads
         openai_api_key: fake_key
       run: |
