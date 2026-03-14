@@ -29,8 +29,7 @@ jobs:
     - name: Run Pytest
       env:
         # Pydantic Settings가 요구하는 필수 값들을 가짜로 정의 (에러 방지용)
-        DATABASE_URL:
-          sqlite:///:memory:
+        DATABASE_URL: 'sqlite:///:memory:'
         kakao_token_url: https://fake.com
         kakao_userInfo_url: https://fake.com
         kakao_client_id: fake_id
@@ -58,7 +57,7 @@ jobs:
         upload_dir: ./uploads
         openai_api_key: fake_key
       run: |
-        pytest 
+        pytest
 
 # --- [Step 2: 배포 준비 단계 (테스트 통과 시에만)] ---
 
